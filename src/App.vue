@@ -1,32 +1,71 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+  <div class="hello">
+    <p>Source text:</p>
+    <p>
+      <textarea rows="3" :disabled="state.isLoading" v-model="state.sourceText"></textarea>
+    </p>
+    <p>
+      <textarea rows="3" disabled v-model="state.translatedText"></textarea>
+    </p>
+    <p>
+      <button type="button" @click="translateText" :disabled="state.isLoading">
+        Translate
+      </button>
+    </p>
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { reactive } from 'vue'
 
-#nav {
-  padding: 30px;
+const fromLang = 'en'
+const toLang = 'pt' // translate to norwegian
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+const API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY
 
-    &.router-link-exact-active {
-      color: #42b983;
+export default {
+  setup () {
+    const state = reactive({
+      isLoading: false,
+      sourceText: '',
+      translatedText: ''
+    })
+
+    const translateText = function () {
+      const text = state.sourceText
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
+
+      const data = {
+        q: text.split('\n\n'),
+        source: fromLang,
+        target: toLang
+      }
+
+      state.isLoading = true
+
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
+      })
+        .then(res => res.json())
+        .then((response) => {
+          state.isLoading = false
+          state.translatedText = response.data.translations.map(item => item.translatedText).join('\n\n')
+        })
+        .catch(error => {
+          state.isLoading = false
+          console.log('There was an error with the translation request: ', error)
+        })
+    }
+
+    return {
+      state,
+      translateText
     }
   }
 }
-</style>
+</script>
