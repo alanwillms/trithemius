@@ -75,7 +75,7 @@
 
 <script>
 import { ref, reactive } from 'vue'
-import { sourceText as sourceTextRaw, translatedText as translatedTextRaw } from '@/dummy'
+// import { sourceText as sourceTextRaw, translatedText as translatedTextRaw } from '@/dummy'
 
 export default {
   setup () {
@@ -85,10 +85,21 @@ export default {
         revised: false
       })
     }
+
+    const projectId = window.location.href.replace(/\/$/, '').split('/').pop()
+    let project = JSON.parse(window.localStorage.getItem(`project-${projectId}`) || '{}')
+
+    if (!project.sourceText || !project.translatedText) {
+      project = {
+        sourceText: 'Project not found!',
+        translatedText: 'Projeto não encontrado!'
+      }
+    }
+
     const textBeingEdited = ref('')
     const selectedParagraph = ref(null)
-    const sourceText = ref(sourceTextRaw.split('\n\n').map(buildParagraph))
-    const translatedText = ref(translatedTextRaw.split('\n\n').map(buildParagraph))
+    const sourceText = ref(project.sourceText.split('\n\n').map(buildParagraph))
+    const translatedText = ref(project.translatedText.split('\n\n').map(buildParagraph))
 
     const selectParagraph = (key, side) => {
       // Re-selected same paragraph

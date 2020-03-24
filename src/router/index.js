@@ -12,7 +12,7 @@ const routes = [
   },
   {
     path: '/translations/:id',
-    name: 'Edit Translations',
+    name: 'edit_translation',
     component: EditTranslation
   },
   {

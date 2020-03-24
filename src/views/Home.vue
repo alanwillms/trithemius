@@ -28,6 +28,27 @@ const toLang = 'pt'
 
 const API_KEY = process.env.VUE_APP_GOOGLE_TRANSLATE_API_KEY
 
+const uuidv4 = () => {
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  )
+}
+
+const storeTranslationProject = (sourceText, translatedText) => {
+  const projects = JSON.parse(window.localStorage.getItem('projects') || '[]')
+  const projectId = uuidv4()
+  projects.push(projectId)
+  window.localStorage.setItem('projects', JSON.stringify(projects))
+  window.localStorage.setItem(`project-${projectId}`, JSON.stringify({
+    id: projectId,
+    createdAt: new Date(),
+    sourceText,
+    translatedText
+  }))
+
+  return projectId
+}
+
 export default {
   setup () {
     const state = reactive({
@@ -60,6 +81,15 @@ export default {
         .then((response) => {
           state.isLoading = false
           state.translatedText = response.data.translations.map(item => item.translatedText).join('\n\n')
+
+          const id = storeTranslationProject(
+            state.sourceText,
+            state.translatedText
+          )
+
+          // @fixme
+          // this.$router.push({ name: 'edit_translation', params: { id } })
+          window.location.href = `/translations/${id}`
         })
         .catch(error => {
           state.isLoading = false
