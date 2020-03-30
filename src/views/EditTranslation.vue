@@ -1,6 +1,9 @@
 <template>
   <div class="flex h-full max-h-full v-full flex-col">
-    <h1 class="flex-shrink flex-grow-0" style="height: 50px">Editing translation</h1>
+    <h1 class="flex-shrink flex-grow-0 p-4" style="height: 50px">
+      <a href="/" class="text-blue-500 pr-4">&lt; Voltar</a>
+      Editing translation
+    </h1>
 
     <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 50px)">
       <div class="flex w-full h-full max-h-full">
@@ -75,7 +78,6 @@
 
 <script>
 import { ref, reactive } from 'vue'
-// import { sourceText as sourceTextRaw, translatedText as translatedTextRaw } from '@/dummy'
 
 export default {
   setup () {
@@ -88,6 +90,14 @@ export default {
 
     const projectId = window.location.href.replace(/\/$/, '').split('/').pop()
     let project = JSON.parse(window.localStorage.getItem(`project-${projectId}`) || '{}')
+
+    const saveDocument = () => {
+      project.translatedText = translatedText.value.map(({ text }) => text).join('\n\n')
+      window.localStorage.setItem(
+        `project-${projectId}`,
+        JSON.stringify(project)
+      )
+    }
 
     if (!project.sourceText || !project.translatedText) {
       project = {
@@ -139,6 +149,7 @@ export default {
       translatedText.value[key].revised = true
       translatedText.value[key].text = textBeingEdited.value
       textBeingEdited.value = ''
+      saveDocument()
       cancelEditing()
     }
 

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import NotFound from '../views/NotFound.vue'
 import EditTranslation from '../views/EditTranslation.vue'
+import NewTranslation from '../views/NewTranslation.vue'
 import About from '../views/About.vue'
 
 const routes = [
@@ -9,6 +10,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/translations/new',
+    name: 'new_translation',
+    component: NewTranslation
   },
   {
     path: '/translations/:id',
