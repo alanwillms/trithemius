@@ -1,6 +1,11 @@
 <template>
   <div class="container mx-auto my-4">
     <div class="mb-4 p-2">
+      <p class="text-lg font-bold mb-4">Project title:</p>
+      <input type="text" class="p-4 border rounded w-full" :disabled="state.isLoading" v-model="state.title">
+    </div>
+
+    <div class="mb-4 p-2">
       <p class="text-lg font-bold mb-4">Source text:</p>
       <textarea rows="6" class="p-4 border rounded w-full" :disabled="state.isLoading" v-model="state.sourceText"></textarea>
     </div>
@@ -50,6 +55,9 @@ export default {
   setup () {
     const state = reactive({
       isLoading: false,
+      title: '',
+      sourceLanguage: 'en',
+      targetLanguage: 'pt',
       sourceText: '',
       translatedText: ''
     })

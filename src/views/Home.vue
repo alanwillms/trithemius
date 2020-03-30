@@ -1,24 +1,35 @@
 <template>
-  <div class="container mx-auto my-4">
-    <p>
-      <button class="border font-bold uppercase text-white py-2 px-4 rounded bg-blue-600 w-full" type="button" @click="newTranslation">
-        New Translation
-      </button>
-    </p>
+  <page-view title="Translations">
+    <div class="flex w-full justify-end">
+      <div class="w-full sm:w-auto">
+        <page-button @click="newTranslation">
+          New Translation
+        </page-button>
+      </div>
+    </div>
 
-    <div
-      class="mt-4 border rounded p-4 cursor-pointer hover:text-blue-500"
+    <page-card
+      class="mt-4 cursor-pointer"
       v-for="(translation, key) in translations"
       v-bind:key="key"
       @click="editTranslation(translation)"
       >
       {{ translation }}
-    </div>
-  </div>
+    </page-card>
+  </page-view>
 </template>
 
 <script>
+import PageButton from '@/components/PageButton'
+import PageCard from '@/components/PageCard'
+import PageView from '@/components/PageView'
+
 export default {
+  components: {
+    PageButton,
+    PageCard,
+    PageView
+  },
   setup () {
     const newTranslation = function () {
       window.location.href = '/translations/new'

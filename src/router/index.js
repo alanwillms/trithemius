@@ -3,7 +3,6 @@ import Home from '../views/Home.vue'
 import NotFound from '../views/NotFound.vue'
 import EditTranslation from '../views/EditTranslation.vue'
 import NewTranslation from '../views/NewTranslation.vue'
-import About from '../views/About.vue'
 
 const routes = [
   {
@@ -20,11 +19,6 @@ const routes = [
     path: '/translations/:id',
     name: 'edit_translation',
     component: EditTranslation
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About
   },
   { path: '/:data(.*)', component: NotFound, name: 'NotFound' }
 ]
