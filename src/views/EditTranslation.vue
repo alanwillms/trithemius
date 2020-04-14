@@ -1,13 +1,8 @@
 <template>
-  <div class="flex h-full max-h-full v-full flex-col">
-    <h1 class="flex-shrink flex-grow-0 p-4" style="height: 50px">
-      <a href="/" class="text-blue-500 pr-4">&lt; Voltar</a>
-      Editing translation
-    </h1>
-
-    <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 50px)">
-      <div class="flex w-full h-full max-h-full">
-        <div class="w-1/2 h-full max-h-full overflow-scroll">
+  <page-view title="Editing translation" back-route="/">
+    <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3.125rem - 1px)">
+      <div class="flex w-full h-full max-h-full bg-white text-black">
+        <div class="w-1/2 h-full max-h-full overflow-y-scroll">
           <div
             :class="{
               'p-4': true,
@@ -25,7 +20,7 @@
           </div>
         </div>
 
-        <div class="w-1/2 h-full max-h-full overflow-scroll">
+        <div class="w-1/2 h-full max-h-full overflow-y-scroll">
           <div
             v-for="(paragraph, key) in translatedText"
             v-bind:key="key"
@@ -73,13 +68,17 @@
         </div>
       </div>
     </div>
-  </div>
+  </page-view>
 </template>
 
 <script>
+import PageView from '@/components/PageView'
 import { ref, reactive } from 'vue'
 
 export default {
+  components: {
+    PageView
+  },
   setup () {
     const buildParagraph = (text) => {
       return reactive({

@@ -1,28 +1,32 @@
 <template>
-  <div class="container mx-auto my-4">
-    <div class="mb-4 p-2">
-      <p class="text-lg font-bold mb-4">Project title:</p>
-      <input type="text" class="p-4 border rounded w-full" :disabled="state.isLoading" v-model="state.title">
-    </div>
+  <page-view title="New Translation" back-route="/">
+    <form-field
+      class="mb-8"
+      label="Project title"
+      :disabled="state.isLoading"
+      v-model="state.title" />
 
-    <div class="mb-4 p-2">
-      <p class="text-lg font-bold mb-4">Source text:</p>
-      <textarea rows="6" class="p-4 border rounded w-full" :disabled="state.isLoading" v-model="state.sourceText"></textarea>
-    </div>
+    <form-field
+      type="textarea"
+      class="mb-8"
+      label="Source text"
+      :disabled="state.isLoading"
+      v-model="state.sourceText" />
 
     <p>
-      <button
-        class="border font-bold uppercase text-white py-2 px-4 rounded bg-blue-600 w-full"
-        type="button"
+      <page-button
         @click="translateText"
         :disabled="state.isLoading">
         Translate
-      </button>
+      </page-button>
     </p>
-  </div>
+  </page-view>
 </template>
 
 <script>
+import FormField from '@/components/FormField'
+import PageButton from '@/components/PageButton'
+import PageView from '@/components/PageView'
 import { reactive } from 'vue'
 
 const fromLang = 'en'
@@ -52,6 +56,11 @@ const storeTranslationProject = (sourceText, translatedText) => {
 }
 
 export default {
+  components: {
+    FormField,
+    PageButton,
+    PageView
+  },
   setup () {
     const state = reactive({
       isLoading: false,
@@ -64,13 +73,16 @@ export default {
 
     const translateText = function () {
       const text = state.sourceText
-      const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
+      // const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
+      const url = `127.0.0.1?key=${API_KEY}`
 
       const data = {
         q: text.split('\n\n'),
         source: fromLang,
         target: toLang
       }
+
+      console.log(state)
 
       state.isLoading = true
 
