@@ -1,17 +1,37 @@
 <template>
   <page-view title="New Translation" back-route="/">
-    <form-field
+    <div class="mb-8">
+      <label class="block mb-2 text-sm leading-none uppercase text-blue-700 w-full">Project title</label>
+      <input
+        class="block w-full leading-none shadow-xl rounded bg-blue-900 h-12 p-4"
+        type="text"
+        :disabled="state.isLoading"
+        v-model="state.title"
+      >
+    </div>
+
+    <div class="mb-8">
+      <label class="block mb-2 text-sm leading-none uppercase text-blue-700 w-full">Source text</label>
+      <textarea
+        class="block w-full leading-none shadow-xl rounded bg-blue-900 p-4"
+        :disabled="state.isLoading"
+        v-model="state.sourceText"
+      ></textarea>
+    </div>
+
+    <!-- <form-field
       class="mb-8"
       label="Project title"
       :disabled="state.isLoading"
-      v-model="state.title" />
+      v-model="state.title"
+      />
 
     <form-field
       type="textarea"
       class="mb-8"
       label="Source text"
       :disabled="state.isLoading"
-      v-model="state.sourceText" />
+      v-model="state.sourceText" /> -->
 
     <p>
       <page-button
@@ -24,32 +44,30 @@
 </template>
 
 <script>
-import FormField from '@/components/FormField'
+// import FormField from '@/components/FormField'
 import PageButton from '@/components/PageButton'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
+import { v4 as uuid } from 'uuid'
 
 const fromLang = 'en'
 const toLang = 'pt'
 
 const API_KEY = process.env.VUE_APP_GOOGLE_TRANSLATE_API_KEY
 
-const uuidv4 = () => {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
-}
-
-const storeTranslationProject = (sourceText, translatedText) => {
+const storeTranslationProject = (project) => {
+  const { title, sourceText, translatedText } = project
   const projects = JSON.parse(window.localStorage.getItem('projects') || '[]')
-  const projectId = uuidv4()
+  const projectId = uuid()
   projects.push(projectId)
   window.localStorage.setItem('projects', JSON.stringify(projects))
   window.localStorage.setItem(`project-${projectId}`, JSON.stringify({
     id: projectId,
-    createdAt: new Date(),
+    title,
+    createdAt: (new Date()).toISOString(),
     sourceText,
-    translatedText
+    translatedText,
+    automaticTranslatedText: translatedText
   }))
 
   return projectId
@@ -57,7 +75,7 @@ const storeTranslationProject = (sourceText, translatedText) => {
 
 export default {
   components: {
-    FormField,
+    // FormField,
     PageButton,
     PageView
   },
@@ -73,16 +91,13 @@ export default {
 
     const translateText = function () {
       const text = state.sourceText
-      // const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
-      const url = `127.0.0.1?key=${API_KEY}`
+      const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
 
       const data = {
         q: text.split('\n\n'),
         source: fromLang,
         target: toLang
       }
-
-      console.log(state)
 
       state.isLoading = true
 
@@ -99,10 +114,7 @@ export default {
           state.isLoading = false
           state.translatedText = response.data.translations.map(item => item.translatedText).join('\n\n')
 
-          const id = storeTranslationProject(
-            state.sourceText,
-            state.translatedText
-          )
+          const id = storeTranslationProject(state)
 
           // @fixme
           // this.$router.push({ name: 'edit_translation', params: { id } })

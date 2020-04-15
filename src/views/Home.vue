@@ -14,7 +14,7 @@
       v-bind:key="key"
       @click="editTranslation(translation)"
       >
-      {{ translation }}
+      {{ translation.title || translation.id }}
     </page-card>
   </page-view>
 </template>
@@ -35,16 +35,20 @@ export default {
       window.location.href = '/translations/new'
     }
 
-    const editTranslation = function (id) {
+    const editTranslation = function ({ id }) {
       // @fixme
       // this.$router.push({ name: 'edit_translation', params: { id } })
       window.location.href = `/translations/${id}`
     }
 
+    const translations = (JSON.parse(window.localStorage.getItem('projects') || '[]')).map(projectId => {
+      return JSON.parse(window.localStorage.getItem(`project-${projectId}`) || '{}')
+    })
+
     return {
       editTranslation,
       newTranslation,
-      translations: (JSON.parse(window.localStorage.getItem('projects') || '[]'))
+      translations
     }
   }
 }
