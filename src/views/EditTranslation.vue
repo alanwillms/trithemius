@@ -55,6 +55,10 @@
               </textarea>
 
               <div class="mt-2 flex w-full justify-end">
+                <button @click="repeatOriginalEditing()" type="button" class="mx-2 rounded bg-orange-600 text-white py-2 px-4">
+                  Repeat
+                </button>
+
                 <button @click="cancelEditing()" type="button" class="mx-2 rounded bg-red-600 text-white py-2 px-4">
                   Cancel
                 </button>
@@ -143,6 +147,11 @@ export default {
       selectedParagraph.value = null
     }
 
+    const repeatOriginalEditing = () => {
+      const key = selectedParagraph.value
+      textBeingEdited.value = sourceText.value[key].text
+    }
+
     const saveEditing = () => {
       const key = selectedParagraph.value
       translatedText.value[key].revised = true
@@ -159,7 +168,8 @@ export default {
       selectParagraph,
       sourceText,
       translatedText,
-      saveEditing
+      saveEditing,
+      repeatOriginalEditing
     }
   }
 }
