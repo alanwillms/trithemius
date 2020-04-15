@@ -12,17 +12,17 @@
               'border-transparent': key !== selectedParagraph,
               'border-red-700': key === selectedParagraph
             }"
-            v-for="(paragraph, key) in sourceText"
+            v-for="(paragraph, key) in paragraphs"
             v-bind:key="key"
             :id="`source-text-${key}`"
             @click="selectParagraph(key, 'source')">
-            {{ paragraph.text }}
+            {{ paragraph.source }}
           </div>
         </div>
 
         <div class="w-1/2 h-full max-h-full overflow-y-scroll">
           <div
-            v-for="(paragraph, key) in translatedText"
+            v-for="(paragraph, key) in paragraphs"
             v-bind:key="key"
             :id="`translated-text-${key}`"
             @click="selectParagraph(key, 'translated')">
@@ -32,11 +32,11 @@
                 'p-4': true,
                 border: true,
                 'font-serif': true,
-                'text-red-800': !paragraph.revised,
+                'text-red-800': !paragraph.touched,
                 'border-transparent': key !== selectedParagraph,
                 'border-red-700': key === selectedParagraph
               }">
-              {{ paragraph.text }}
+              {{ paragraph.translation }}
             </div>
 
             <div v-else>
@@ -45,7 +45,7 @@
                   'p-4': true,
                   border: true,
                   'font-mono': true,
-                  // 'text-red-800': !paragraph.revised,
+                  // 'text-red-800': !paragraph.touched,
                   'border-transparent': key !== selectedParagraph,
                   'border-red-700': key === selectedParagraph,
                   'w-full': true
@@ -78,41 +78,34 @@
 <script>
 import PageView from '@/components/PageView'
 import { ref, reactive } from 'vue'
+import { getTranslation, updateTranslation } from '@/helpers'
 
 export default {
   components: {
     PageView
   },
   setup () {
-    const buildParagraph = (text) => {
-      return reactive({
-        text,
-        revised: false
-      })
+    const buildParagraph = (paragraph) => {
+      return reactive(paragraph)
     }
 
-    const projectId = window.location.href.replace(/\/$/, '').split('/').pop()
-    let project = JSON.parse(window.localStorage.getItem(`project-${projectId}`) || '{}')
+    const id = window.location.href.replace(/\/$/, '').split('/').pop()
+    let translation = getTranslation(id)
 
     const saveDocument = () => {
-      project.translatedText = translatedText.value.map(({ text }) => text).join('\n\n')
-      window.localStorage.setItem(
-        `project-${projectId}`,
-        JSON.stringify(project)
-      )
+      updateTranslation(translation)
     }
 
-    if (!project.sourceText || !project.translatedText) {
-      project = {
-        sourceText: 'Project not found!',
-        translatedText: 'Projeto não encontrado!'
+    if (!translation.paragraphs || translation.paragraphs.length === 0) {
+      translation = {
+        sourceText: 'Translation not found!',
+        translatedText: 'Tradução não encontrada!'
       }
     }
 
     const textBeingEdited = ref('')
     const selectedParagraph = ref(null)
-    const sourceText = ref(project.sourceText.split('\n\n').map(buildParagraph))
-    const translatedText = ref(project.translatedText.split('\n\n').map(buildParagraph))
+    const paragraphs = ref(translation.paragraphs.map(buildParagraph))
 
     const selectParagraph = (key, side) => {
       // Re-selected same paragraph
@@ -121,13 +114,13 @@ export default {
       }
 
       // Selected another paragraph and didn't save the previous one
-      if (selectedParagraph.value !== null && textBeingEdited.value !== '' && textBeingEdited.value !== translatedText.value[selectedParagraph.value].text) {
+      if (selectedParagraph.value !== null && textBeingEdited.value !== '' && textBeingEdited.value !== paragraphs.value[selectedParagraph.value].translation) {
         return
       }
 
       selectedParagraph.value = key
 
-      textBeingEdited.value = translatedText.value[key].text
+      textBeingEdited.value = paragraphs.value[key].translation
 
       // const scrollOptions = { behavior: 'smooth' }
       const scrollOptions = {}
@@ -149,13 +142,13 @@ export default {
 
     const repeatOriginalEditing = () => {
       const key = selectedParagraph.value
-      textBeingEdited.value = sourceText.value[key].text
+      textBeingEdited.value = paragraphs.value[key].source
     }
 
     const saveEditing = () => {
       const key = selectedParagraph.value
-      translatedText.value[key].revised = true
-      translatedText.value[key].text = textBeingEdited.value
+      paragraphs.value[key].touched = true
+      paragraphs.value[key].translation = textBeingEdited.value
       textBeingEdited.value = ''
       saveDocument()
       cancelEditing()
@@ -166,8 +159,7 @@ export default {
       selectedParagraph,
       cancelEditing,
       selectParagraph,
-      sourceText,
-      translatedText,
+      paragraphs,
       saveEditing,
       repeatOriginalEditing
     }

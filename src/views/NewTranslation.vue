@@ -48,30 +48,9 @@
 import PageButton from '@/components/PageButton'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
-import { v4 as uuid } from 'uuid'
-
-const fromLang = 'en'
-const toLang = 'pt'
+import { createTranslation, editTranslation } from '@/helpers'
 
 const API_KEY = process.env.VUE_APP_GOOGLE_TRANSLATE_API_KEY
-
-const storeTranslationProject = (project) => {
-  const { title, sourceText, translatedText } = project
-  const projects = JSON.parse(window.localStorage.getItem('projects') || '[]')
-  const projectId = uuid()
-  projects.push(projectId)
-  window.localStorage.setItem('projects', JSON.stringify(projects))
-  window.localStorage.setItem(`project-${projectId}`, JSON.stringify({
-    id: projectId,
-    title,
-    createdAt: (new Date()).toISOString(),
-    sourceText,
-    translatedText,
-    automaticTranslatedText: translatedText
-  }))
-
-  return projectId
-}
 
 export default {
   components: {
@@ -95,8 +74,8 @@ export default {
 
       const data = {
         q: text.split('\n\n'),
-        source: fromLang,
-        target: toLang
+        source: state.sourceLanguage,
+        target: state.targetLanguage
       }
 
       state.isLoading = true
@@ -114,11 +93,24 @@ export default {
           state.isLoading = false
           state.translatedText = response.data.translations.map(item => item.translatedText).join('\n\n')
 
-          const id = storeTranslationProject(state)
+          const sourceParagraphs = text.split('\n\n')
+          const automaticTranslationParagraphs = response.data.translations.map(item => item.translatedText)
 
-          // @fixme
-          // this.$router.push({ name: 'edit_translation', params: { id } })
-          window.location.href = `/translations/${id}`
+          const paragraphs = []
+
+          for (const key in sourceParagraphs) {
+            paragraphs.push({
+              key,
+              source: sourceParagraphs[key],
+              translation: automaticTranslationParagraphs[key],
+              automaticTranslation: automaticTranslationParagraphs[key],
+              touched: false
+            })
+          }
+
+          const translation = createTranslation(state, paragraphs)
+
+          editTranslation(translation)
         })
         .catch(error => {
           state.isLoading = false

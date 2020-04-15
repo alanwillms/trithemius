@@ -11,6 +11,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    type: {
+      type: String,
+      required: false,
+      default: 'primary'
     }
   },
   setup () {
