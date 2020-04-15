@@ -78,7 +78,7 @@
 <script>
 import PageView from '@/components/PageView'
 import { ref, reactive } from 'vue'
-import { getTranslation, updateTranslation } from '@/helpers'
+import { getTranslation, updateTranslation, calculateCompletenessPercentage } from '@/helpers'
 
 export default {
   components: {
@@ -93,6 +93,7 @@ export default {
     let translation = getTranslation(id)
 
     const saveDocument = () => {
+      translation.completeness = calculateCompletenessPercentage(translation.paragraphs)
       updateTranslation(translation)
     }
 
@@ -150,8 +151,8 @@ export default {
       paragraphs.value[key].touched = true
       paragraphs.value[key].translation = textBeingEdited.value
       textBeingEdited.value = ''
-      saveDocument()
       cancelEditing()
+      saveDocument()
     }
 
     return {

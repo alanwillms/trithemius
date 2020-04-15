@@ -31,7 +31,14 @@ export function createTranslation (metadata, paragraphs) {
 }
 
 export function updateTranslation (translation) {
-  const { id, paragraphs } = translation
+  const { id, completeness, paragraphs } = translation
+  const translations = getTranslations()
+  for (const found of translations) {
+    if (found.id === id) {
+      found.completeness = completeness
+    }
+  }
+  window.localStorage.setItem('translations', JSON.stringify(translations))
   window.localStorage.setItem(`translation-${id}`, JSON.stringify(paragraphs))
 }
 
@@ -45,4 +52,22 @@ export function getTranslation (id) {
 
 export function getTranslations () {
   return JSON.parse(window.localStorage.getItem('translations') || '[]')
+}
+
+export function calculateCompletenessPercentage (paragraphs) {
+  const sum = (total, num) => {
+    return total + num
+  }
+  const total = paragraphs.map(found => found.translation.length).reduce(sum, 0)
+  const translated = paragraphs.filter(found => found.touched).map(found => found.translation.length).reduce(sum, 0)
+  if (total === 0) {
+    return 100
+  }
+  const percentage = (translated / total * 100)
+
+  if (percentage > 100) {
+    return 100
+  }
+
+  return percentage
 }

@@ -22,6 +22,7 @@
       >
       <div class="flex-grow" @click="editTranslation(translation)">
         {{ translation.title || translation.id }}
+        ({{ (translation.completeness || 0).toFixed(0) }}%)
       </div>
 
       <div class="flex-grow-0 pl-2" @click="editTranslation(translation)">
