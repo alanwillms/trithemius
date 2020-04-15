@@ -1,5 +1,5 @@
 <template>
-  <page-view title="Editing translation" back-route="/">
+  <page-view :title="pageTitle || 'Editing translation'" back-route="/">
     <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3.125rem - 1px)">
       <div class="flex w-full h-full max-h-full bg-white text-black">
         <div class="w-1/2 h-full max-h-full overflow-y-scroll">
@@ -16,7 +16,7 @@
             v-bind:key="key"
             :id="`source-text-${key}`"
             @click="selectParagraph(key, 'source')">
-            {{ paragraph.source }}
+            <div v-for="(line, lineKey) in paragraph.source.split('\n')" v-bind:key="lineKey">{{ line }}</div>
           </div>
         </div>
 
@@ -36,7 +36,7 @@
                 'border-transparent': key !== selectedParagraph,
                 'border-red-700': key === selectedParagraph
               }">
-              {{ paragraph.translation }}
+              <div v-for="(line, lineKey) in paragraph.translation.split('\n')" v-bind:key="lineKey">{{ line }}</div>
             </div>
 
             <div v-else>
@@ -94,6 +94,7 @@ export default {
 
     const saveDocument = () => {
       translation.completeness = calculateCompletenessPercentage(translation.paragraphs)
+      pageTitle.value = `Editing Translation (${translation.completeness.toFixed(0)}%)`
       updateTranslation(translation)
     }
 
@@ -104,6 +105,7 @@ export default {
       }
     }
 
+    const pageTitle = ref(`Editing Translation (${translation.completeness.toFixed(0)}%)`)
     const textBeingEdited = ref('')
     const selectedParagraph = ref(null)
     const paragraphs = ref(translation.paragraphs.map(buildParagraph))
@@ -156,6 +158,7 @@ export default {
     }
 
     return {
+      pageTitle,
       textBeingEdited,
       selectedParagraph,
       cancelEditing,

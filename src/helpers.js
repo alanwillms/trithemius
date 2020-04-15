@@ -20,7 +20,8 @@ export function createTranslation (metadata, paragraphs) {
     title,
     createdAt: (new Date()).toISOString(),
     sourceLanguage,
-    targetLanguage
+    targetLanguage,
+    completeness: 0
   }
   const translations = getTranslations()
   translations.push(translation)
