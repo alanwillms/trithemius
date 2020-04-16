@@ -3,12 +3,19 @@ import Home from '../views/Home.vue'
 import NotFound from '../views/NotFound.vue'
 import EditTranslation from '../views/EditTranslation.vue'
 import NewTranslation from '../views/NewTranslation.vue'
+import Settings from '../views/Settings.vue'
+import { getSetting } from '../helpers'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings
   },
   {
     path: '/translations/new',
@@ -23,9 +30,19 @@ const routes = [
   { path: '/:data(.*)', component: NotFound, name: 'NotFound' }
 ]
 
-export const routerHistory = createWebHistory()
-export const router = createRouter({
+const routerHistory = createWebHistory()
+
+const router = createRouter({
   history: routerHistory,
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'Settings' && !getSetting('googleTranslateApiKey')) {
+    next({ name: 'Settings' })
+  }
+  return next()
+})
+
+export { router, routerHistory }

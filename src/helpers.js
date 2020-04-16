@@ -72,3 +72,18 @@ export function calculateCompletenessPercentage (paragraphs) {
 
   return percentage
 }
+
+export function getSettings () {
+  return JSON.parse(window.localStorage.getItem('settings') || '{}')
+}
+
+export function getSetting (key) {
+  const settings = getSettings()
+  return settings[key]
+}
+
+export function defineSetting (key, value) {
+  const settings = getSettings()
+  settings[key] = value
+  window.localStorage.setItem('settings', JSON.stringify(settings))
+}
