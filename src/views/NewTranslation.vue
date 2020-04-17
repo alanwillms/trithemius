@@ -35,6 +35,7 @@
 
     <p>
       <page-button
+        type="primary"
         @click="translateText"
         :disabled="state.isLoading">
         Translate

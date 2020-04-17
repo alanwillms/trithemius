@@ -2,7 +2,7 @@
   <page-view title="Translations">
     <div class="flex w-full justify-end">
       <div class="w-full sm:w-auto">
-        <page-button @click="newTranslation">
+        <page-button type="primary" @click="newTranslation">
           New Translation
         </page-button>
       </div>

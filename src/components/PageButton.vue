@@ -1,5 +1,6 @@
 <template>
-  <button class="font-bold uppercase text-white leading-none p-4 rounded-lg bg-blue-500 w-full hover:bg-blue-600 active:bg-blue-600" type="button" :disabled="disabled">
+  <button
+    :class="cssClasses" type="button" :disabled="disabled">
     <slot />
   </button>
 </template>
@@ -15,11 +16,50 @@ export default {
     type: {
       type: String,
       required: false,
-      default: 'primary'
+      default: 'default'
+    },
+    size: {
+      type: String,
+      required: false,
+      default: 'normal'
     }
   },
-  setup () {
+  setup (props) {
+    const cssClasses = {
+      'font-bold': true,
+      uppercase: true,
+      'leading-none': true,
+      'rounded-lg': true,
+      'w-full': true
+    }
 
+    if (props.type === 'danger') {
+      cssClasses['text-white'] = true
+      cssClasses['bg-red-500'] = true
+      cssClasses['hover:bg-red-600'] = true
+      cssClasses['active:bg-Red-600'] = true
+    } else if (props.type === 'primary') {
+      cssClasses['text-white'] = true
+      cssClasses['bg-blue-500'] = true
+      cssClasses['hover:bg-blue-600'] = true
+      cssClasses['active:bg-blue-600'] = true
+    } else {
+      cssClasses['text-black'] = true
+      cssClasses['bg-gray-500'] = true
+      cssClasses['hover:bg-gray-600'] = true
+      cssClasses['active:bg-gray-600'] = true
+    }
+
+    if (props.size === 'small') {
+      cssClasses['p-2'] = true
+      cssClasses['text-sm'] = true
+    } else {
+      cssClasses['p-4'] = true
+    }
+
+    return {
+      cssClasses
+    }
   }
 }
 </script>

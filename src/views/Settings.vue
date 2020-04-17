@@ -21,6 +21,7 @@
 
     <p>
       <page-button
+        type="primary"
         @click="save"
         :disabled="state.hasErrors">
         Save

@@ -1,6 +1,11 @@
 <template>
-  <page-view :title="pageTitle || 'Editing translation'" back-route="/">
-    <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3.125rem - 1px)">
+  <page-view
+    :title="pageTitle || 'Editing translation'"
+    back-route="/"
+    action-text="Download"
+    :action-callback="downloadTranslation"
+    >
+    <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3rem - 1px)">
       <div class="flex w-full h-full max-h-full bg-white text-black">
         <div class="w-1/2 h-full max-h-full overflow-y-scroll">
           <div
@@ -79,6 +84,7 @@
 import PageView from '@/components/PageView'
 import { ref, reactive } from 'vue'
 import { getTranslation, updateTranslation, calculateCompletenessPercentage } from '@/helpers'
+import { saveAs } from 'file-saver'
 
 export default {
   components: {
@@ -96,6 +102,12 @@ export default {
       translation.completeness = calculateCompletenessPercentage(translation.paragraphs)
       pageTitle.value = `Editing Translation (${translation.completeness.toFixed(0)}%)`
       updateTranslation(translation)
+    }
+
+    const downloadTranslation = () => {
+      const content = translation.paragraphs.map(item => item.translation).join('\n\n')
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+      saveAs(blob, `${translation.title}.txt`)
     }
 
     if (!translation.paragraphs || translation.paragraphs.length === 0) {
@@ -165,6 +177,7 @@ export default {
       selectParagraph,
       paragraphs,
       saveEditing,
+      downloadTranslation,
       repeatOriginalEditing
     }
   }
