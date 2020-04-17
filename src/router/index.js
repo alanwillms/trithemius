@@ -4,6 +4,7 @@ import NotFound from '../views/NotFound.vue'
 import EditTranslation from '../views/EditTranslation.vue'
 import NewTranslation from '../views/NewTranslation.vue'
 import Settings from '../views/Settings.vue'
+import SignIn from '../views/SignIn.vue'
 import { getSetting } from '../helpers'
 
 const routes = [
@@ -16,6 +17,11 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings
+  },
+  {
+    path: '/login',
+    name: 'SignIn',
+    component: SignIn
   },
   {
     path: '/translations/new',
