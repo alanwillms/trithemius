@@ -3,6 +3,7 @@ import App from './App.vue'
 import './assets/tailwind.css'
 import { router } from './router'
 import * as firebase from 'firebase/app'
+import { userStore } from './store/user.store'
 
 const app = createApp(App)
 
@@ -18,6 +19,13 @@ const configOptions = {
 }
 
 firebase.initializeApp(configOptions)
+
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    return userStore.setUserData(user)
+  }
+  return userStore.clearUserData()
+})
 
 app.use(router)
 

@@ -40,6 +40,7 @@ import PageButton from '@/components/PageButton'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
 import * as firebase from 'firebase'
+import { userStore } from '../store/user.store'
 
 export default {
   components: {
@@ -61,6 +62,7 @@ export default {
         .signInWithEmailAndPassword(state.email, state.password)
         .then(data => {
           // this.$router.replace({ name: "Dashboard" });
+          userStore.setUserData(data)
           state.isLoading = false
           window.location.href = '/'
         })

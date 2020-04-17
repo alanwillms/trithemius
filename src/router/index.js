@@ -6,6 +6,7 @@ import NewTranslation from '../views/NewTranslation.vue'
 import Settings from '../views/Settings.vue'
 import SignIn from '../views/SignIn.vue'
 import { getSetting } from '../helpers'
+import { userStore } from '../store/user.store'
 
 const routes = [
   {
@@ -45,6 +46,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const { loggedIn } = userStore.getState()
+  if (to.name !== 'SignIn' && !loggedIn) {
+    next({ name: 'SignIn' })
+  }
+
   if (to.name !== 'Settings' && !getSetting('googleTranslateApiKey')) {
     next({ name: 'Settings' })
   }
