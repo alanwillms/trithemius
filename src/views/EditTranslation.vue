@@ -135,7 +135,7 @@ export default {
 
       selectedParagraph.value = key
 
-      textBeingEdited.value = paragraphs.value[key].translation
+      textBeingEdited.value = paragraphs.value[key].translation.replace(/&quot;/g, '"').replace(/&#39;/g, "'")
 
       // const scrollOptions = { behavior: 'smooth' }
       const scrollOptions = {}

@@ -36,7 +36,7 @@
     <p>
       <page-button
         type="primary"
-        @click="translateText"
+        @click="translate"
         :disabled="state.isLoading">
         Translate
       </page-button>
@@ -46,6 +46,7 @@
 
 <script>
 // import FormField from '@/components/FormField'
+import chunk from 'lodash.chunk'
 import PageButton from '@/components/PageButton'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
@@ -69,59 +70,72 @@ export default {
       translatedText: ''
     })
 
-    const translateText = function () {
-      const text = state.sourceText
-      const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
+    const sleep = (millis) => {
+      return new Promise(resolve => setTimeout(resolve, millis))
+    }
 
-      const data = {
-        q: text.split('\n\n'),
-        source: state.sourceLanguage,
-        target: state.targetLanguage
-      }
+    const translate = async () => {
+      try {
+        const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
+        const sourceParagraphs = state.sourceText.split('\n\n')
+        const chunks = chunk(sourceParagraphs, 128)
+        let automaticTranslationParagraphs = []
 
-      state.isLoading = true
+        state.isLoading = true
 
-      fetch(url, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        }
-      })
-        .then(res => res.json())
-        .then((response) => {
-          state.isLoading = false
-          state.translatedText = response.data.translations.map(item => item.translatedText).join('\n\n')
-
-          const sourceParagraphs = text.split('\n\n')
-          const automaticTranslationParagraphs = response.data.translations.map(item => item.translatedText)
-
-          const paragraphs = []
-
-          for (const key in sourceParagraphs) {
-            paragraphs.push({
-              key,
-              source: sourceParagraphs[key],
-              translation: automaticTranslationParagraphs[key],
-              automaticTranslation: automaticTranslationParagraphs[key],
-              touched: false
-            })
+        for (const chunk of chunks) {
+          const data = {
+            q: chunk,
+            source: state.sourceLanguage,
+            target: state.targetLanguage
           }
+          await sleep(60000)
+          const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            }
+          })
 
-          const translation = createTranslation(state, paragraphs)
+          const jsonData = await response.json()
 
-          editTranslation(translation)
-        })
-        .catch(error => {
-          state.isLoading = false
-          console.log('There was an error with the translation request: ', error)
-        })
+          const responseTranslations = jsonData.data.translations.map(item => item.translatedText)
+
+          automaticTranslationParagraphs = [
+            ...automaticTranslationParagraphs,
+            ...responseTranslations
+          ]
+        }
+
+        state.isLoading = false
+        state.translatedText = automaticTranslationParagraphs.join('\n\n')
+
+        const paragraphs = []
+
+        for (const key in sourceParagraphs) {
+          paragraphs.push({
+            key,
+            source: sourceParagraphs[key],
+            translation: automaticTranslationParagraphs[key],
+            automaticTranslation: automaticTranslationParagraphs[key],
+            touched: false
+          })
+        }
+
+        const translation = createTranslation(state, paragraphs)
+
+        editTranslation(translation)
+      } catch (error) {
+        state.isLoading = false
+        console.log('There was an error with the translation request: ', error)
+      }
     }
 
     return {
       state,
-      translateText
+      translate
     }
   }
 }
