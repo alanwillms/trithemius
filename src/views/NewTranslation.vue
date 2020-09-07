@@ -83,13 +83,16 @@ export default {
 
         state.isLoading = true
 
-        for (const chunk of chunks) {
+        for (const key in chunks) {
+          const chunk = chunks[key]
           const data = {
             q: chunk,
             source: state.sourceLanguage,
             target: state.targetLanguage
           }
-          await sleep(60000)
+          if (key > 0) {
+            await sleep(60000)
+          }
           const response = await fetch(url, {
             method: 'POST',
             body: JSON.stringify(data),
