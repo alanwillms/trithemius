@@ -45,6 +45,7 @@ import PageButton from '@/components/PageButton'
 import PageCard from '@/components/PageCard'
 import PageView from '@/components/PageView'
 import { editTranslation, deleteTranslation } from '@/helpers'
+import { storeTranslation } from '@/storage/cloud-firestore'
 
 export default {
   components: {
@@ -59,6 +60,10 @@ export default {
     }
 
     const translations = (JSON.parse(window.localStorage.getItem('translations') || '[]'))
+
+    translations.forEach(project => {
+      storeTranslation(project)
+    })
 
     const confirmAndDeleteTranslation = (translation) => {
       if (confirm('Are you sure?')) {
