@@ -1,8 +1,11 @@
-# trithemius
+# Trithemius
 
 ## Project setup
-```
+
+```bash
 npm install
+firebase init firestore
+firebase deploy --only firestore:rules
 ```
 
 ### Compiles and hot-reloads for development

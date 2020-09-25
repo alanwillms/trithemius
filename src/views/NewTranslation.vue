@@ -50,7 +50,10 @@ import chunk from 'lodash.chunk'
 import PageButton from '@/components/PageButton'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
-import { createTranslation, editTranslation } from '@/helpers'
+import { editTranslation } from '@/helpers'
+import { storeTranslation } from '@/storage/cloud-firestore'
+import { v4 as uuid } from 'uuid'
+import firebase from '@/firebase'
 
 const API_KEY = process.env.VUE_APP_GOOGLE_TRANSLATE_API_KEY
 
@@ -127,9 +130,26 @@ export default {
           })
         }
 
-        const translation = createTranslation(state, paragraphs)
+        const translation = {
+          id: uuid(),
+          title: state.title,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          sourceLanguage: state.sourceLanguage,
+          targetLanguage: state.targetLanguage,
+          completeness: 0,
+          paragraphs,
+          owner: firebase.auth().currentUser.uid
+        }
 
-        editTranslation(translation)
+        storeTranslation(translation)
+          .then(record => {
+            editTranslation(record)
+          })
+          .catch(error => {
+            console.log('There was an error with the translation request: ', error)
+            state.isLoading = false
+          })
       } catch (error) {
         state.isLoading = false
         console.log('There was an error with the translation request: ', error)

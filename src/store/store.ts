@@ -1,19 +1,19 @@
 import { reactive, readonly } from 'vue'
 
-export class Store {
-  _state;
+export abstract class Store {
+  _state: any
 
-  constructor () {
+  constructor() {
     const data = this._data()
     this._setup(data)
     this._state = reactive(data)
   }
 
-  _data () {}
+  abstract _data(): any
 
-  _setup (data) {}
+  _setup(data: any) {}
 
-  getState () {
+  getState() {
     return readonly(this._state)
   }
 }

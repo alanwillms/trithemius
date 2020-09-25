@@ -1,21 +1,21 @@
 import { Store } from './store'
 
 class UserStore extends Store {
-  _data () {
-    const data = JSON.parse(localStorage.getItem('session')) || {
+  _data() {
+    const data = JSON.parse(localStorage.getItem('session') || 'null') || {
       loggedIn: false,
-      data: null
+      data: null,
     }
     return data
   }
 
-  setUserData (data) {
+  setUserData(data: any) {
     this._state.loggedIn = true
     this._state.data = data
     window.localStorage.setItem('session', JSON.stringify(this._state))
   }
 
-  clearUserData () {
+  clearUserData() {
     this._state.loggedIn = false
     this._state.data = null
     localStorage.removeItem('session')

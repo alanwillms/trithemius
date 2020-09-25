@@ -10,7 +10,14 @@
 
     <page-card
       class="mt-4"
-      v-if="!translations || translations.length === 0"
+      v-if="isLoading"
+      >
+      Loading translations...
+    </page-card>
+
+    <page-card
+      class="mt-4"
+      v-if="!isLoading && (!translations || translations.length === 0)"
       >
       No translation projects found.
     </page-card>
@@ -45,7 +52,8 @@ import PageButton from '@/components/PageButton'
 import PageCard from '@/components/PageCard'
 import PageView from '@/components/PageView'
 import { editTranslation, deleteTranslation } from '@/helpers'
-import { storeTranslation } from '@/storage/cloud-firestore'
+import { listTranslations } from '@/storage/cloud-firestore'
+import { ref } from 'vue'
 
 export default {
   components: {
@@ -59,11 +67,23 @@ export default {
       window.location.href = '/translations/new'
     }
 
-    const translations = (JSON.parse(window.localStorage.getItem('translations') || '[]'))
+    const translations = ref([])
+    const isLoading = ref(true)
 
-    translations.forEach(project => {
-      storeTranslation(project)
+    listTranslations().then(rows => {
+      translations.value = rows
+      isLoading.value = false
     })
+
+    // const translations = (JSON.parse(window.localStorage.getItem('translations') || '[]'))
+
+    // translations.forEach(project => {
+    //   if (project.completeness < 100) {
+    //     const translationProject = getTranslation(project.id)
+    //     translationProject.owner = 'i1GhHPoFjLb46gL40wZxrp9Mh923'
+    //     // storeTranslation(translationProject)
+    //   }
+    // })
 
     const confirmAndDeleteTranslation = (translation) => {
       if (confirm('Are you sure?')) {
@@ -75,7 +95,8 @@ export default {
       confirmAndDeleteTranslation,
       editTranslation,
       newTranslation,
-      translations
+      translations,
+      isLoading
     }
   }
 }

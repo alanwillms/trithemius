@@ -29,10 +29,10 @@
           <div
             v-for="(paragraph, key) in paragraphs"
             v-bind:key="key"
-            :id="`translated-text-${key}`"
-            @click="selectParagraph(key, 'translated')">
+            :id="`translated-text-${key}`">
             <div
               v-if="key !== selectedParagraph"
+              @click="selectParagraph(key, 'translated')"
               :class="{
                 'p-4': true,
                 border: true,
@@ -83,7 +83,8 @@
 <script>
 import PageView from '@/components/PageView'
 import { ref, reactive } from 'vue'
-import { getTranslation, updateTranslation, calculateCompletenessPercentage } from '@/helpers'
+import { calculateCompletenessPercentage } from '@/helpers'
+import { findTranslation, storeTranslation } from '@/storage/cloud-firestore'
 import { saveAs } from 'file-saver'
 
 export default {
@@ -96,31 +97,36 @@ export default {
     }
 
     const id = window.location.href.replace(/\/$/, '').split('/').pop()
-    let translation = getTranslation(id)
+    const translation = ref(null)
+    const isLoading = ref(true)
+    const pageTitle = ref(`Loading translation...`)
+    const textBeingEdited = ref('')
+    const selectedParagraph = ref(null)
+    const paragraphs = ref([])
+
+    findTranslation(id).then(record => {
+      translation.value = record
+      isLoading.value = false
+      paragraphs.value = record.paragraphs.map(buildParagraph)
+      pageTitle.value = `Editing Translation (${record.completeness.toFixed(0)}%)`
+    }).catch(err => {
+      isLoading.value = false
+      pageTitle.value = `Translation not found`
+      console.error(err)
+    })
 
     const saveDocument = () => {
-      translation.completeness = calculateCompletenessPercentage(translation.paragraphs)
-      pageTitle.value = `Editing Translation (${translation.completeness.toFixed(0)}%)`
-      updateTranslation(translation)
+      translation.value.completeness = calculateCompletenessPercentage(translation.value.paragraphs)
+      translation.value.updatedAt = new Date().toISOString()
+      pageTitle.value = `Editing Translation (${translation.value.completeness.toFixed(0)}%)`
+      storeTranslation(translation.value)
     }
 
     const downloadTranslation = () => {
-      const content = translation.paragraphs.map(item => item.translation).join('\n\n')
+      const content = translation.value.paragraphs.map(item => item.translation).join('\n\n')
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, `${translation.title}.txt`)
+      saveAs(blob, `${translation.value.title}.txt`)
     }
-
-    if (!translation.paragraphs || translation.paragraphs.length === 0) {
-      translation = {
-        sourceText: 'Translation not found!',
-        translatedText: 'Tradução não encontrada!'
-      }
-    }
-
-    const pageTitle = ref(`Editing Translation (${translation.completeness.toFixed(0)}%)`)
-    const textBeingEdited = ref('')
-    const selectedParagraph = ref(null)
-    const paragraphs = ref(translation.paragraphs.map(buildParagraph))
 
     const selectParagraph = (key, side) => {
       // Re-selected same paragraph

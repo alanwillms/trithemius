@@ -12,37 +12,36 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
   },
   {
     path: '/settings',
     name: 'Settings',
-    component: Settings
+    component: Settings,
   },
   {
     path: '/login',
     name: 'SignIn',
-    component: SignIn
+    component: SignIn,
   },
   {
     path: '/translations/new',
     name: 'new_translation',
-    component: NewTranslation
+    component: NewTranslation,
   },
   {
     path: '/translations/:id',
     name: 'edit_translation',
-    component: EditTranslation
+    component: EditTranslation,
   },
-  { path: '/:data(.*)', component: NotFound, name: 'NotFound' }
+  { path: '/:data(.*)', component: NotFound, name: 'NotFound' },
 ]
 
 const routerHistory = createWebHistory()
 
 const router = createRouter({
   history: routerHistory,
-  base: process.env.BASE_URL,
-  routes
+  routes,
 })
 
 router.beforeEach((to, from, next) => {
