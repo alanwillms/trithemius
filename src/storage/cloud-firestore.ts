@@ -1,30 +1,8 @@
 import firebase from '../firebase'
 import chunk from 'lodash.chunk'
+import { TranslationProject, TranslationProjectParagraph } from '@/types'
 
 const db = firebase.firestore()
-
-enum LanguageCode {}
-
-interface TranslationProject {
-  owner: string
-  id: string
-  title: string
-  createdAt: Date
-  updatedAt: Date
-  deletedAt: Date
-  sourceLanguage: LanguageCode
-  targetLanguage: LanguageCode
-  completeness: number
-  paragraphs?: TranslationProjectParagraph[]
-}
-
-interface TranslationProjectParagraph {
-  key: number
-  source: string
-  automaticTranslation?: string
-  translation: string
-  touched: boolean
-}
 
 const getDocumentReference = (id: string) => {
   return db.collection('projects').doc(id)
