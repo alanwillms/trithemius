@@ -54,7 +54,10 @@ const findTranslation = async (id: string) => {
 }
 
 const listTranslations = async (id: string) => {
-  const records = await db.collection('projects').get()
+  const records = await db
+    .collection('projects')
+    .where('deletedAt', '==', null)
+    .get()
   return records.docs.map(doc => doc.data() as TranslationProject)
 }
 

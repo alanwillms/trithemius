@@ -51,8 +51,8 @@
 import PageButton from '@/components/PageButton'
 import PageCard from '@/components/PageCard'
 import PageView from '@/components/PageView'
-import { editTranslation, deleteTranslation } from '@/helpers'
-import { listTranslations } from '@/storage/cloud-firestore'
+import { editTranslation } from '@/helpers'
+import { listTranslations, storeTranslation } from '@/storage/cloud-firestore'
 import { ref } from 'vue'
 
 export default {
@@ -87,7 +87,14 @@ export default {
 
     const confirmAndDeleteTranslation = (translation) => {
       if (confirm('Are you sure?')) {
-        deleteTranslation(translation)
+        translation.deletedAt = new Date().toISOString()
+        storeTranslation(translation)
+        const list = translations.value
+        list.splice(
+          list.findIndex(item => item.id === translation.id),
+          1
+        )
+        translation.value = list
       }
     }
 
