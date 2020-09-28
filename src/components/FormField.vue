@@ -6,8 +6,8 @@
       class="block w-full leading-none shadow-xl rounded bg-blue-900 h-12 p-4"
       :type="type"
       :disabled="disabled"
-      :value="value"
-      @input="$emit('update', $event.target.value)"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     >
 
     <textarea
@@ -15,18 +15,14 @@
       class="block w-full leading-none shadow-xl rounded bg-blue-900 p-4"
       :disabled="disabled"
       :rows="rows"
-      :value="value"
-      @input="$emit('update', $event.target.value)"
+      :value="modelValue"
+      @input="$emit('update:modelValue', $event.target.value)"
     ></textarea>
   </div>
 </template>
 
 <script>
 export default {
-  model: {
-    prop: 'value',
-    event: 'update'
-  },
   props: {
     label: {
       type: String,
@@ -47,14 +43,7 @@ export default {
       required: false,
       default: 5
     },
-    value: {
-      required: false,
-      default: ''
-    }
-  },
-  setup () {
-    return {
-    }
+    modelValue: String,
   }
 }
 </script>

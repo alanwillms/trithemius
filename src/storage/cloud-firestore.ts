@@ -1,4 +1,4 @@
-import firebase from '../firebase'
+import firebase from '@/firebase'
 import chunk from 'lodash.chunk'
 import { TranslationProject, TranslationProjectParagraph } from '@/types'
 
@@ -65,7 +65,7 @@ const storeTranslation = async (project: TranslationProject) => {
   const docRef = getDocumentReference(project.id)
   const record = await docRef.get()
   const data = {
-    owner: project.owner,
+    owner: firebase.auth().currentUser?.uid,
     id: project.id,
     title: project.title,
     createdAt: project.createdAt,
