@@ -8,72 +8,28 @@
     <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3rem - 1px)">
       <div class="flex w-full h-full max-h-full bg-white text-black">
         <div class="w-1/2 h-full max-h-full overflow-y-scroll">
-          <div
-            :class="{
-              'p-4': true,
-              border: true,
-              'font-serif': true,
-              'bg-yellow-400': key === selectedParagraph,
-              'border-transparent': key !== selectedParagraph,
-              'border-red-700': key === selectedParagraph
-            }"
+          <cat-source-paragraph
             v-for="(paragraph, key) in paragraphs"
             v-bind:key="key"
             :id="`source-text-${key}`"
-            @click="selectParagraph(key, 'source')">
-            <div v-for="(line, lineKey) in paragraph.source.split('\n')" v-bind:key="lineKey">{{ line }}</div>
-          </div>
+            :paragraph="paragraph"
+            :is-selected="key === selectedParagraph"
+            @click="selectParagraph(key, 'source')" />
         </div>
 
         <div class="w-1/2 h-full max-h-full overflow-y-scroll">
-          <div
+          <cat-translated-paragraph
             v-for="(paragraph, key) in paragraphs"
             v-bind:key="key"
-            :id="`translated-text-${key}`">
-            <div
-              v-if="key !== selectedParagraph"
-              @click="selectParagraph(key, 'translated')"
-              :class="{
-                'p-4': true,
-                border: true,
-                'font-serif': true,
-                'text-red-800': !paragraph.touched,
-                'border-transparent': key !== selectedParagraph,
-                'border-red-700': key === selectedParagraph
-              }">
-              <div v-for="(line, lineKey) in paragraph.translation.split('\n')" v-bind:key="lineKey">{{ line }}</div>
-            </div>
-
-            <div v-else>
-              <textarea
-                :class="{
-                  'p-4': true,
-                  border: true,
-                  'font-mono': true,
-                  // 'text-red-800': !paragraph.touched,
-                  'border-transparent': key !== selectedParagraph,
-                  'border-red-700': key === selectedParagraph,
-                  'w-full': true
-                }"
-                v-model="textBeingEdited"
-                autofocus>
-              </textarea>
-
-              <div class="mt-2 flex w-full justify-end">
-                <button @click="repeatOriginalEditing()" type="button" class="mx-2 rounded bg-orange-600 text-white py-2 px-4">
-                  Repeat
-                </button>
-
-                <button @click="cancelEditing()" type="button" class="mx-2 rounded bg-red-600 text-white py-2 px-4">
-                  Cancel
-                </button>
-
-                <button @click="saveEditing()" type="button" class="mx-2 rounded bg-blue-600 text-white py-2 px-4">
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
+            v-model="textBeingEdited"
+            :id="`translated-text-${key}`"
+            :paragraph="paragraph"
+            :is-editable="key === selectedParagraph"
+            @select="selectParagraph(key, 'translated')"
+            @cancel="cancelEditing()"
+            @repeat="repeatOriginalEditing()"
+            @save="saveEditing()"
+            />
         </div>
       </div>
     </div>
@@ -81,6 +37,8 @@
 </template>
 
 <script>
+import CatSourceParagraph from '@/components/CatSourceParagraph'
+import CatTranslatedParagraph from '@/components/CatTranslatedParagraph'
 import PageView from '@/components/PageView'
 import { ref, reactive } from 'vue'
 import { calculateCompletenessPercentage } from '@/helpers'
@@ -89,7 +47,9 @@ import { saveAs } from 'file-saver'
 
 export default {
   components: {
-    PageView
+    CatSourceParagraph,
+    CatTranslatedParagraph,
+    PageView,
   },
   setup () {
     const buildParagraph = (paragraph) => {
