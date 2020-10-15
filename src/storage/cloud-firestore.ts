@@ -1,6 +1,7 @@
 import firebase from '@/firebase'
 import chunk from 'lodash.chunk'
 import { TranslationProject, TranslationProjectParagraph } from '@/types'
+import { userStore } from '@/store/user.store'
 
 const db = firebase.firestore()
 
@@ -32,8 +33,10 @@ const findTranslation = async (id: string) => {
 }
 
 const listTranslations = async (id: string) => {
+  const { data } = userStore.getState()
   const records = await db
     .collection('projects')
+    .where('owner', '==', data?.uid)
     .where('deletedAt', '==', null)
     .get()
   return records.docs.map(doc => doc.data() as TranslationProject)
@@ -53,6 +56,7 @@ const storeTranslationParagraphs = async (project: TranslationProject) => {
         translation: paragraph.translation,
         automaticTranslation: paragraph.automaticTranslation,
         touched: paragraph.touched,
+        owner: firebase.auth().currentUser?.uid,
       }
       batch.set(collection.doc(`${paragraph.key}`), data)
     }

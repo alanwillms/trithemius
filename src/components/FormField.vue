@@ -12,7 +12,7 @@
 
     <textarea
       v-if="type === 'textarea'"
-      class="block w-full leading-none shadow-xl rounded bg-blue-900 p-4"
+      class="block w-full shadow-xl rounded bg-blue-900 p-4"
       :disabled="disabled"
       :rows="rows"
       :value="modelValue"
