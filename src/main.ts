@@ -4,6 +4,7 @@ import './assets/tailwind.css'
 import { router } from './router'
 import firebase from './firebase'
 import { userStore } from './store/user.store'
+import store from './store'
 
 const app = createApp(App)
 
@@ -15,5 +16,7 @@ firebase.auth().onAuthStateChanged(user => {
 })
 
 app.use(router)
+
+app.use(store)
 
 app.mount('#app')
