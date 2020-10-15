@@ -44,18 +44,18 @@ const router = createRouter({
   routes,
 })
 
-/*
 router.beforeEach((to, from, next) => {
   const { loggedIn } = userStore.getState()
   if (to.name !== 'SignIn' && !loggedIn) {
     return next({ name: 'SignIn' })
   }
 
+  /*
   if (to.name !== 'Settings' && !getSetting('googleTranslateApiKey')) {
     return next({ name: 'Settings' })
   }
+  */
   return next()
 })
-*/
 
 export { router, routerHistory }
