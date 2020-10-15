@@ -75,16 +75,6 @@ export default {
       isLoading.value = false
     })
 
-    // const translations = (JSON.parse(window.localStorage.getItem('translations') || '[]'))
-
-    // translations.forEach(project => {
-    //   if (project.completeness < 100) {
-    //     const translationProject = getTranslation(project.id)
-    //     translationProject.owner = 'i1GhHPoFjLb46gL40wZxrp9Mh923'
-    //     // storeTranslation(translationProject)
-    //   }
-    // })
-
     const confirmAndDeleteTranslation = (translation) => {
       if (confirm('Are you sure?')) {
         translation.deletedAt = new Date().toISOString()

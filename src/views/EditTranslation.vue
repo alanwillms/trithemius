@@ -6,25 +6,14 @@
     :action-callback="downloadTranslation"
     >
     <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3rem - 1px)">
-      <div class="flex w-full h-full max-h-full bg-white text-black">
-        <div class="w-1/2 h-full max-h-full overflow-y-scroll">
-          <cat-source-paragraph
+      <div class="w-full h-full max-h-full">
+        <div class="w-full h-full max-h-full overflow-y-scroll">
+          <cat-paragraph
             v-for="(paragraph, key) in paragraphs"
             v-bind:key="key"
-            :id="`source-text-${key}`"
+            :id="`paragraph-${key}`"
             :paragraph="paragraph"
             :is-selected="key === selectedParagraph"
-            @click="selectParagraph(key, 'source')" />
-        </div>
-
-        <div class="w-1/2 h-full max-h-full overflow-y-scroll">
-          <cat-translated-paragraph
-            v-for="(paragraph, key) in paragraphs"
-            v-bind:key="key"
-            v-model="textBeingEdited"
-            :id="`translated-text-${key}`"
-            :paragraph="paragraph"
-            :is-editable="key === selectedParagraph"
             @select="selectParagraph(key, 'translated')"
             @cancel="cancelEditing()"
             @repeat="repeatOriginalEditing()"
@@ -37,18 +26,17 @@
 </template>
 
 <script>
-import CatSourceParagraph from '@/components/CatSourceParagraph'
-import CatTranslatedParagraph from '@/components/CatTranslatedParagraph'
+import CatParagraph from '@/components/CatParagraph'
 import PageView from '@/components/PageView'
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { calculateCompletenessPercentage } from '@/helpers'
 import { findTranslation, storeTranslation } from '@/storage/cloud-firestore'
 import { saveAs } from 'file-saver'
+import { useStore } from 'vuex'
 
 export default {
   components: {
-    CatSourceParagraph,
-    CatTranslatedParagraph,
+    CatParagraph,
     PageView,
   },
   setup () {
@@ -56,11 +44,12 @@ export default {
       return reactive(paragraph)
     }
 
+    const store = useStore()
     const id = window.location.href.replace(/\/$/, '').split('/').pop()
     const translation = ref(null)
     const isLoading = ref(true)
     const pageTitle = ref(`Loading translation...`)
-    const textBeingEdited = ref('')
+    const textBeingEdited = computed(() => store.state.textBeingEdited)
     const selectedParagraph = ref(null)
     const paragraphs = ref([])
 
@@ -101,20 +90,10 @@ export default {
 
       selectedParagraph.value = key
 
-      textBeingEdited.value = paragraphs.value[key].translation.replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-
-      // const scrollOptions = { behavior: 'smooth' }
-      const scrollOptions = {}
-
-      if (key === null) {
-        return
-      }
-
-      if (side === 'source') {
-        document.getElementById(`translated-text-${key}`).scrollIntoView(scrollOptions)
-      } else {
-        document.getElementById(`source-text-${key}`).scrollIntoView(scrollOptions)
-      }
+      store.dispatch(
+        'setTextBeingEdited',
+        paragraphs.value[key].translation.replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+      )
     }
 
     const cancelEditing = () => {
@@ -123,14 +102,14 @@ export default {
 
     const repeatOriginalEditing = () => {
       const key = selectedParagraph.value
-      textBeingEdited.value = paragraphs.value[key].source
+      store.dispatch('setTextBeingEdited', paragraphs.value[key].source)
     }
 
     const saveEditing = () => {
       const key = selectedParagraph.value
       paragraphs.value[key].touched = true
       paragraphs.value[key].translation = textBeingEdited.value
-      textBeingEdited.value = ''
+      store.dispatch('setTextBeingEdited', '')
       cancelEditing()
       saveDocument()
     }
