@@ -1,6 +1,12 @@
 <template>
   <page-view title="Translations">
-    <div class="flex w-full justify-end">
+    <div class="flex w-full justify-between">
+      <div class="w-full sm:w-auto">
+        <page-button type="danger" @click="signOut">
+          Sign out
+        </page-button>
+      </div>
+
       <div class="w-full sm:w-auto">
         <page-button type="primary" @click="newTranslation">
           New Translation
@@ -54,6 +60,7 @@ import PageView from '@/components/PageView'
 import { editTranslation } from '@/helpers'
 import { listTranslations, storeTranslation } from '@/storage/cloud-firestore'
 import { ref } from 'vue'
+import firebase from '../firebase'
 
 export default {
   components: {
@@ -65,6 +72,13 @@ export default {
     const newTranslation = function () {
       // @fixme use vue router
       window.location.href = '/translations/new'
+    }
+
+    const signOut = () => {
+      firebase.auth().signOut().then(function() {
+        // @fixme use vue router
+        window.location.href = '/login'
+      })
     }
 
     const translations = ref([])
@@ -93,7 +107,8 @@ export default {
       editTranslation,
       newTranslation,
       translations,
-      isLoading
+      isLoading,
+      signOut
     }
   }
 }

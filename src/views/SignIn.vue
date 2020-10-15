@@ -64,8 +64,7 @@ export default {
           // this.$router.replace({ name: "Dashboard" });
           userStore.setUserData(data)
           state.isLoading = false
-          // window.location.href = '/'
-          console.log(data)
+          window.location.href = '/'
         })
         .catch(err => {
           state.isLoading = false
