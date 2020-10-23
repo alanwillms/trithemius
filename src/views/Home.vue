@@ -14,17 +14,14 @@
       </div>
     </div>
 
-    <page-card
-      class="mt-4"
-      v-if="isLoading"
-      >
+    <page-card class="mt-4" v-if="isLoading">
       Loading translations...
     </page-card>
 
     <page-card
       class="mt-4"
       v-if="!isLoading && (!translations || translations.length === 0)"
-      >
+    >
       No translation projects found.
     </page-card>
 
@@ -32,7 +29,7 @@
       class="mt-4 cursor-pointer flex items-center"
       v-for="(translation, key) in translations"
       v-bind:key="key"
-      >
+    >
       <div class="flex-grow" @click="editTranslation(translation)">
         {{ translation.title || translation.id }}
         ({{ (translation.completeness || 0).toFixed(0) }}%)
@@ -44,7 +41,10 @@
         </page-button>
       </div>
 
-      <div class="flex-grow-0 pl-2" @click="confirmAndDeleteTranslation(translation)">
+      <div
+        class="flex-grow-0 pl-2"
+        @click="confirmAndDeleteTranslation(translation)"
+      >
         <page-button type="danger">
           Delete
         </page-button>
@@ -58,7 +58,7 @@ import PageButton from '@/components/PageButton'
 import PageCard from '@/components/PageCard'
 import PageView from '@/components/PageView'
 import { editTranslation } from '@/helpers'
-import { listTranslations, storeTranslation } from '@/storage/cloud-firestore'
+import { listTranslations, storeTranslation } from '@/storage'
 import { ref } from 'vue'
 import firebase from '../firebase'
 
@@ -66,19 +66,22 @@ export default {
   components: {
     PageButton,
     PageCard,
-    PageView
+    PageView,
   },
-  setup () {
-    const newTranslation = function () {
+  setup() {
+    const newTranslation = function() {
       // @fixme use vue router
       window.location.href = '/translations/new'
     }
 
     const signOut = () => {
-      firebase.auth().signOut().then(function() {
-        // @fixme use vue router
-        window.location.href = '/login'
-      })
+      firebase
+        .auth()
+        .signOut()
+        .then(function() {
+          // @fixme use vue router
+          window.location.href = '/login'
+        })
     }
 
     const translations = ref([])
@@ -89,14 +92,14 @@ export default {
       isLoading.value = false
     })
 
-    const confirmAndDeleteTranslation = (translation) => {
+    const confirmAndDeleteTranslation = translation => {
       if (confirm('Are you sure?')) {
         translation.deletedAt = new Date().toISOString()
         storeTranslation(translation)
         const list = translations.value
         list.splice(
           list.findIndex(item => item.id === translation.id),
-          1
+          1,
         )
         translation.value = list
       }
@@ -108,8 +111,8 @@ export default {
       newTranslation,
       translations,
       isLoading,
-      signOut
+      signOut,
     }
-  }
+  },
 }
 </script>

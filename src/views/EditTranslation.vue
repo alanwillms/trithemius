@@ -4,8 +4,11 @@
     back-route="/"
     action-text="Download"
     :action-callback="downloadTranslation"
+  >
+    <div
+      class="flex-grow flex-shrink-0"
+      style="height: calc(100vh - 2rem - 3rem - 1px)"
     >
-    <div class="flex-grow flex-shrink-0" style="height: calc(100vh - 2rem - 3rem - 1px)">
       <div class="w-full h-full max-h-full">
         <div class="w-full h-full max-h-full overflow-y-scroll">
           <cat-paragraph
@@ -18,7 +21,7 @@
             @cancel="cancelEditing()"
             @repeat="repeatOriginalEditing()"
             @save="saveEditing()"
-            />
+          />
         </div>
       </div>
     </div>
@@ -30,7 +33,7 @@ import CatParagraph from '@/components/CatParagraph'
 import PageView from '@/components/PageView'
 import { ref, reactive, computed } from 'vue'
 import { calculateCompletenessPercentage } from '@/helpers'
-import { findTranslation, storeTranslation } from '@/storage/cloud-firestore'
+import { findTranslation, storeTranslation } from '@/storage'
 import { saveAs } from 'file-saver'
 import { useStore } from 'vuex'
 
@@ -39,13 +42,16 @@ export default {
     CatParagraph,
     PageView,
   },
-  setup () {
-    const buildParagraph = (paragraph) => {
+  setup() {
+    const buildParagraph = paragraph => {
       return reactive(paragraph)
     }
 
     const store = useStore()
-    const id = window.location.href.replace(/\/$/, '').split('/').pop()
+    const id = window.location.href
+      .replace(/\/$/, '')
+      .split('/')
+      .pop()
     const translation = ref(null)
     const isLoading = ref(true)
     const pageTitle = ref(`Loading translation...`)
@@ -53,26 +59,36 @@ export default {
     const selectedParagraph = ref(null)
     const paragraphs = ref([])
 
-    findTranslation(id).then(record => {
-      translation.value = record
-      isLoading.value = false
-      paragraphs.value = record.paragraphs.map(buildParagraph)
-      pageTitle.value = `Editing Translation (${record.completeness.toFixed(0)}%)`
-    }).catch(err => {
-      isLoading.value = false
-      pageTitle.value = `Translation not found`
-      console.error(err)
-    })
+    findTranslation(id)
+      .then(record => {
+        translation.value = record
+        isLoading.value = false
+        paragraphs.value = record.paragraphs.map(buildParagraph)
+        pageTitle.value = `Editing Translation (${record.completeness.toFixed(
+          0,
+        )}%)`
+      })
+      .catch(err => {
+        isLoading.value = false
+        pageTitle.value = `Translation not found`
+        console.error(err)
+      })
 
     const saveDocument = () => {
-      translation.value.completeness = calculateCompletenessPercentage(translation.value.paragraphs)
+      translation.value.completeness = calculateCompletenessPercentage(
+        translation.value.paragraphs,
+      )
       translation.value.updatedAt = new Date().toISOString()
-      pageTitle.value = `Editing Translation (${translation.value.completeness.toFixed(0)}%)`
+      pageTitle.value = `Editing Translation (${translation.value.completeness.toFixed(
+        0,
+      )}%)`
       storeTranslation(translation.value)
     }
 
     const downloadTranslation = () => {
-      const content = translation.value.paragraphs.map(item => item.translation).join('\n\n')
+      const content = translation.value.paragraphs
+        .map(item => item.translation)
+        .join('\n\n')
       const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
       saveAs(blob, `${translation.value.title}.txt`)
     }
@@ -84,7 +100,12 @@ export default {
       }
 
       // Selected another paragraph and didn't save the previous one
-      if (selectedParagraph.value !== null && textBeingEdited.value !== '' && textBeingEdited.value !== paragraphs.value[selectedParagraph.value].translation) {
+      if (
+        selectedParagraph.value !== null &&
+        textBeingEdited.value !== '' &&
+        textBeingEdited.value !==
+          paragraphs.value[selectedParagraph.value].translation
+      ) {
         return
       }
 
@@ -92,7 +113,9 @@ export default {
 
       store.dispatch(
         'setTextBeingEdited',
-        paragraphs.value[key].translation.replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+        paragraphs.value[key].translation
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'"),
       )
     }
 
@@ -123,8 +146,8 @@ export default {
       paragraphs,
       saveEditing,
       downloadTranslation,
-      repeatOriginalEditing
+      repeatOriginalEditing,
     }
-  }
+  },
 }
 </script>
