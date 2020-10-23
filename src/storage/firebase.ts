@@ -2,6 +2,11 @@ import firebase from '@/firebase'
 import chunk from 'lodash.chunk'
 import { TranslationProject, TranslationProjectParagraph } from '@/types'
 import { userStore } from '@/store/user.store'
+import {
+  FindTranslationFunc,
+  ListTranslationsFunc,
+  StoreTranslationFunc,
+} from './types'
 
 const db = firebase.firestore()
 
@@ -9,7 +14,7 @@ const getDocumentReference = (id: string) => {
   return db.collection('projects').doc(id)
 }
 
-const findTranslation = async (id: string) => {
+const findTranslation: FindTranslationFunc = async id => {
   const docRef = getDocumentReference(id)
   const record = await docRef.get()
   const translationProject = record.data() as TranslationProject | undefined
@@ -32,7 +37,7 @@ const findTranslation = async (id: string) => {
   return translationProject
 }
 
-const listTranslations = async (id: string) => {
+const listTranslations: ListTranslationsFunc = async () => {
   const { data } = userStore.getState()
   const records = await db
     .collection('projects')
@@ -65,7 +70,7 @@ const storeTranslationParagraphs = async (project: TranslationProject) => {
   }
 }
 
-const storeTranslation = async (project: TranslationProject) => {
+const storeTranslation: StoreTranslationFunc = async project => {
   const docRef = getDocumentReference(project.id)
   const record = await docRef.get()
   const data = {

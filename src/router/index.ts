@@ -3,9 +3,7 @@ import Home from '../views/Home.vue'
 import NotFound from '../views/NotFound.vue'
 import EditTranslation from '../views/EditTranslation.vue'
 import NewTranslation from '../views/NewTranslation.vue'
-import Settings from '../views/Settings.vue'
 import SignIn from '../views/SignIn.vue'
-import { getSetting } from '../helpers'
 import { userStore } from '../store/user.store'
 
 const routes = [
@@ -13,11 +11,6 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
-  },
-  {
-    path: '/settings',
-    name: 'Settings',
-    component: Settings,
   },
   {
     path: '/login',
@@ -45,16 +38,13 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const { loggedIn } = userStore.getState()
-  if (to.name !== 'SignIn' && !loggedIn) {
-    return next({ name: 'SignIn' })
+  if (process.env.VUE_APP_STORAGE_DRIVER === 'firebase') {
+    const { loggedIn } = userStore.getState()
+    if (to.name !== 'SignIn' && !loggedIn) {
+      return next({ name: 'SignIn' })
+    }
   }
 
-  /*
-  if (to.name !== 'Settings' && !getSetting('googleTranslateApiKey')) {
-    return next({ name: 'Settings' })
-  }
-  */
   return next()
 })
 
