@@ -81,17 +81,9 @@
             </td>
 
             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-              <span
-                class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
-              >
-                <span
-                  aria-hidden
-                  class="absolute inset-0 bg-green-200 opacity-50 rounded-full"
-                ></span>
-                <span class="relative"
-                  >{{ (translation.completeness || 0).toFixed(0) }}%</span
-                >
-              </span>
+              <translation-progress
+                :completeness="translation.completeness || 0"
+              />
             </td>
 
             <td
@@ -125,6 +117,7 @@
 import PageButton from '@/components/PageButton'
 import PageCard from '@/components/PageCard'
 import PageView from '@/components/PageView'
+import TranslationProgress from '@/components/TranslationProgress'
 import { editTranslation } from '@/helpers'
 import { listTranslations, storeTranslation } from '@/storage'
 import { ref } from 'vue'
@@ -135,6 +128,7 @@ export default {
     PageButton,
     PageCard,
     PageView,
+    TranslationProgress,
   },
   setup() {
     const newTranslation = function() {
