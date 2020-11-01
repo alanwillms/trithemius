@@ -1,5 +1,5 @@
 import chunk from 'lodash.chunk'
-import { LanguageCode } from '@/types'
+import { TranslateFunc } from './types'
 
 const API_KEY = process.env.VUE_APP_GOOGLE_TRANSLATE_API_KEY
 const MAX_PARAGRAPHS_PER_REQUEST = 128
@@ -9,10 +9,10 @@ const sleep = (millis: number) => {
   return new Promise(resolve => setTimeout(resolve, millis))
 }
 
-const translate = async (
-  targetLanguage: LanguageCode,
-  sourceText: string,
-  sourceLanguage: LanguageCode,
+const translate: TranslateFunc = async (
+  targetLanguage,
+  sourceText,
+  sourceLanguage,
 ) => {
   const sourceParagraphs = sourceText.split('\n\n')
   const chunks = chunk(sourceParagraphs, MAX_PARAGRAPHS_PER_REQUEST)

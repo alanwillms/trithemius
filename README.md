@@ -4,6 +4,7 @@ An alternative for Google Translator Toolkit orphans.
 
 Supported translation APIs:
 
+* None (no automatic translation)
 * Google Translate
 
 Supported storage drivers:
@@ -37,8 +38,6 @@ yarn serve
 
 ```bash
 yarn build
-firebase deploy --only firestore:rules
-firebase deploy --only hosting
 ```
 
 ### Lints and fixes files

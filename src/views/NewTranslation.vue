@@ -35,7 +35,7 @@ import { reactive } from 'vue'
 import { editTranslation } from '@/helpers'
 import { storeTranslation } from '@/storage'
 import { v4 as uuid } from 'uuid'
-import { translate as machineTranslation } from '@/machine-translation/google-cloud'
+import { translate as machineTranslation } from '@/machine-translation'
 
 export default {
   components: {

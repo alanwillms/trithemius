@@ -1,4 +1,3 @@
-import { Store } from '@/store/store'
 import { TranslationProject } from '@/types'
 
 export interface ListTranslationsFunc {
