@@ -7,6 +7,32 @@
       v-model="state.title"
     />
 
+    <form-select
+      class="mb-8"
+      label="Source language"
+      :disabled="state.isLoading"
+      v-model="state.sourceLanguage"
+    >
+      <option value="en">English</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="pt">Portuguese</option>
+      <option value="es">Spanish</option>
+    </form-select>
+
+    <form-select
+      class="mb-8"
+      label="Target language"
+      :disabled="state.isLoading"
+      v-model="state.targetLanguage"
+    >
+      <option value="en">English</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="pt">Portuguese</option>
+      <option value="es">Spanish</option>
+    </form-select>
+
     <form-field
       type="textarea"
       class="mb-8"
@@ -29,6 +55,7 @@
 
 <script>
 import FormField from '@/components/FormField'
+import FormSelect from '@/components/FormSelect'
 import PageButton from '@/components/PageButton'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
@@ -40,6 +67,7 @@ import { translate as machineTranslation } from '@/machine-translation'
 export default {
   components: {
     FormField,
+    FormSelect,
     PageButton,
     PageView,
   },

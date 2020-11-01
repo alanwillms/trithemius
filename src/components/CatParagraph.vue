@@ -1,5 +1,6 @@
 <template>
-  <div :class="{
+  <div
+    :class="{
       flex: true,
       'w-full': true,
       border: true,
@@ -9,13 +10,15 @@
       'border-gray-400': true,
       'bg-gray-100': !isSelected,
       'bg-gray-400': isSelected,
-    }">
+    }"
+  >
     <div class="w-1/2 h-full">
       <cat-source-paragraph
         :id="`source-text-${paragraph.key}`"
         :paragraph="paragraph"
         :is-selected="isSelected"
-        @click="$emit('select')" />
+        @click="$emit('select')"
+      />
     </div>
 
     <div class="w-1/2 h-full">
@@ -27,7 +30,7 @@
         @cancel="$emit('cancel')"
         @repeat="$emit('repeat')"
         @save="$emit('save')"
-        />
+      />
     </div>
   </div>
 </template>
@@ -48,9 +51,9 @@ export default {
     },
     isSelected: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    modelValue: String
-  }
+    modelValue: String,
+  },
 }
 </script>

@@ -18,7 +18,7 @@
       >
       </textarea>
 
-      <div class="sans-serif p-4 flex w-full justify-end">
+      <div class="font-sans p-4 flex w-full justify-end">
         <button
           @click="$emit('repeat')"
           type="button"

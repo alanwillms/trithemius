@@ -25,31 +25,99 @@
       No translation projects found.
     </page-card>
 
-    <page-card
-      class="mt-4 cursor-pointer flex items-center"
-      v-for="(translation, key) in translations"
-      v-bind:key="key"
+    <div
+      v-if="translations && translations.length > 0"
+      class="mt-4 inline-block min-w-full shadow border border-gray-300 rounded-lg overflow-hidden"
     >
-      <div class="flex-grow" @click="editTranslation(translation)">
-        {{ translation.title || translation.id }}
-        ({{ (translation.completeness || 0).toFixed(0) }}%)
-      </div>
+      <table class="min-w-full leading-normal">
+        <thead>
+          <tr>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Project
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              From
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              To
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Progress
+            </th>
+            <th
+              class="w-56 text-center px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Actions
+            </th>
+          </tr>
+        </thead>
 
-      <div class="flex-grow-0 pl-2" @click="editTranslation(translation)">
-        <page-button>
-          Edit
-        </page-button>
-      </div>
+        <tbody>
+          <tr v-for="(translation, key) in translations" v-bind:key="key">
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <p class="text-gray-900 whitespace-no-wrap">
+                {{ translation.title || translation.id }}
+              </p>
+            </td>
 
-      <div
-        class="flex-grow-0 pl-2"
-        @click="confirmAndDeleteTranslation(translation)"
-      >
-        <page-button type="danger">
-          Delete
-        </page-button>
-      </div>
-    </page-card>
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <p class="text-gray-900 whitespace-no-wrap">
+                {{ translation.sourceLanguage }}
+              </p>
+            </td>
+
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <p class="text-gray-900 whitespace-no-wrap">
+                {{ translation.targetLanguage }}
+              </p>
+            </td>
+
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <span
+                class="relative inline-block px-3 py-1 font-semibold text-green-900 leading-tight"
+              >
+                <span
+                  aria-hidden
+                  class="absolute inset-0 bg-green-200 opacity-50 rounded-full"
+                ></span>
+                <span class="relative"
+                  >{{ (translation.completeness || 0).toFixed(0) }}%</span
+                >
+              </span>
+            </td>
+
+            <td
+              class="w-56 px-5 py-5 border-b border-gray-200 bg-white text-sm text-right"
+            >
+              <div class="flex justify-center">
+                <div class="pr-2" @click="editTranslation(translation)">
+                  <page-button>
+                    Edit
+                  </page-button>
+                </div>
+
+                <div
+                  class="pl-2"
+                  @click="confirmAndDeleteTranslation(translation)"
+                >
+                  <page-button type="danger">
+                    Delete
+                  </page-button>
+                </div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </page-view>
 </template>
 

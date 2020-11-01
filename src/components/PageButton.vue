@@ -1,6 +1,5 @@
 <template>
-  <button
-    :class="cssClasses" type="button" :disabled="disabled">
+  <button :class="cssClasses" type="button" :disabled="disabled">
     <slot />
   </button>
 </template>
@@ -18,6 +17,8 @@ const configureCssClasses = (cssClasses, props) => {
   cssClasses['leading-none'] = true
   cssClasses['rounded-lg'] = true
   cssClasses['w-full'] = true
+  cssClasses['focus:outline-none'] = true
+  cssClasses['focus:shadow-outline'] = true
 
   if (props.disabled) {
     cssClasses['text-gray-900'] = true
@@ -36,9 +37,9 @@ const configureCssClasses = (cssClasses, props) => {
     cssClasses['active:bg-blue-600'] = true
   } else {
     cssClasses['text-black'] = true
-    cssClasses['bg-gray-500'] = true
-    cssClasses['hover:bg-gray-600'] = true
-    cssClasses['active:bg-gray-600'] = true
+    cssClasses['bg-gray-200'] = true
+    cssClasses['hover:bg-gray-400'] = true
+    cssClasses['active:bg-gray-400'] = true
   }
 
   if (props.size === 'small') {
@@ -54,31 +55,34 @@ export default {
     disabled: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
     type: {
       type: String,
       required: false,
-      default: 'default'
+      default: 'default',
     },
     size: {
       type: String,
       required: false,
-      default: 'normal'
-    }
+      default: 'normal',
+    },
   },
-  setup (props) {
+  setup(props) {
     const cssClasses = reactive({})
 
-    watch(() => props.disabled, (first, second) => {
-      configureCssClasses(cssClasses, props)
-    })
+    watch(
+      () => props.disabled,
+      (first, second) => {
+        configureCssClasses(cssClasses, props)
+      },
+    )
 
     configureCssClasses(cssClasses, props)
 
     return {
-      cssClasses
+      cssClasses,
     }
-  }
+  },
 }
 </script>
