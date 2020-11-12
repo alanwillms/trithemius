@@ -37,13 +37,17 @@ const findTranslation: FindTranslationFunc = async id => {
   return translationProject
 }
 
-const listTranslations: ListTranslationsFunc = async () => {
+const listTranslations: ListTranslationsFunc = async conditions => {
+  const { order } = conditions || {}
   const { data } = userStore.getState()
-  const records = await db
+  let query = db
     .collection('projects')
     .where('owner', '==', data?.uid)
     .where('deletedAt', '==', null)
-    .get()
+  if (order) {
+    query = query.orderBy(order.by, order.direction)
+  }
+  const records = await query.get()
   return records.docs.map(doc => doc.data() as TranslationProject)
 }
 

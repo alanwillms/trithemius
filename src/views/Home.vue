@@ -40,6 +40,11 @@
             <th
               class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
             >
+              Date
+            </th>
+            <th
+              class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
               From
             </th>
             <th
@@ -70,6 +75,12 @@
 
             <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
               <p class="text-gray-900 whitespace-no-wrap">
+                {{ formatDate(translation.createdAt) }}
+              </p>
+            </td>
+
+            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+              <p class="text-gray-900 whitespace-no-wrap">
                 {{ translation.sourceLanguage }}
               </p>
             </td>
@@ -91,8 +102,8 @@
             >
               <div class="flex justify-center">
                 <div class="pr-2" @click="editTranslation(translation)">
-                  <page-button>
-                    Edit
+                  <page-button title="Edit">
+                    <i class="fas fa-edit"></i>
                   </page-button>
                 </div>
 
@@ -100,8 +111,8 @@
                   class="pl-2"
                   @click="confirmAndDeleteTranslation(translation)"
                 >
-                  <page-button type="danger">
-                    Delete
+                  <page-button type="danger" title="Destroy">
+                    <i class="fas fa-trash-alt"></i>
                   </page-button>
                 </div>
               </div>
@@ -149,10 +160,22 @@ export default {
     const translations = ref([])
     const isLoading = ref(true)
 
-    listTranslations().then(rows => {
-      translations.value = rows
-      isLoading.value = false
-    })
+    listTranslations({ order: { by: 'createdAt', direction: 'desc' } }).then(
+      rows => {
+        translations.value = rows
+        isLoading.value = false
+      },
+    )
+
+    const formatDate = dateString => {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+      })
+    }
 
     const confirmAndDeleteTranslation = translation => {
       if (confirm('Are you sure?')) {
@@ -174,6 +197,7 @@ export default {
       translations,
       isLoading,
       signOut,
+      formatDate,
     }
   },
 }

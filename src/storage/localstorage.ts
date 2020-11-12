@@ -14,9 +14,23 @@ function getTranslations() {
   return JSON.parse(window.localStorage.getItem(projectsKey) || '[]')
 }
 
-const listTranslations: ListTranslationsFunc = () => {
+const listTranslations: ListTranslationsFunc = conditions => {
+  const { order } = conditions || {}
   return Promise.resolve().then(function() {
-    return getTranslations()
+    let translations = getTranslations()
+    if (order) {
+      translations = translations.sort((a: any, b: any) => {
+        if (a[order.by] < b[order.by]) {
+          return order.direction === 'desc' ? 1 : -1
+        }
+        if (a[order.by] > b[order.by]) {
+          return order.direction === 'desc' ? -1 : 1
+        }
+
+        return 0
+      })
+    }
+    return translations
   })
 }
 

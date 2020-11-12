@@ -1,5 +1,5 @@
 <template>
-  <button :class="cssClasses" type="button" :disabled="disabled">
+  <button :title="title" :class="cssClasses" type="button" :disabled="disabled">
     <slot />
   </button>
 </template>
@@ -67,6 +67,7 @@ export default {
       required: false,
       default: 'normal',
     },
+    title: String,
   },
   setup(props) {
     const cssClasses = reactive({})

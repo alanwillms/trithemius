@@ -1,7 +1,16 @@
 import { TranslationProject } from '@/types'
 
+interface SortOrder {
+  by: string
+  direction?: 'asc' | 'desc'
+}
+
+interface ListOptions {
+  order?: SortOrder
+}
+
 export interface ListTranslationsFunc {
-  (): Promise<TranslationProject[]>
+  (options?: ListOptions): Promise<TranslationProject[]>
 }
 
 export interface StoreTranslationFunc {
