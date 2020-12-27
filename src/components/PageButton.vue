@@ -14,6 +14,8 @@ const configureCssClasses = (cssClasses, props) => {
 
   cssClasses['font-bold'] = true
   cssClasses.uppercase = true
+  cssClasses.border = true
+  cssClasses['cursor-pointer'] = true
   cssClasses['leading-none'] = true
   cssClasses['rounded-lg'] = true
   cssClasses['w-full'] = true

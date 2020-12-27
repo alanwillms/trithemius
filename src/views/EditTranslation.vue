@@ -1,13 +1,26 @@
 <template>
-  <page-view
-    :title="pageTitle || 'Editing translation'"
-    back-route="/"
-    action-text="Download"
-    :action-callback="downloadTranslation"
-  >
+  <page-view :title="pageTitle || 'Editing translation'" back-route="/">
+    <template #buttons>
+      <div class="w-full flex items-center">
+        <div class="flex-shrink w-1/2 text-xl font-bold">
+          {{ translation?.title || '' }}
+        </div>
+
+        <div class="flex justify-end w-1/2">
+          <page-button size="small" @click="downloadOriginal()">
+            Download Original
+          </page-button>
+
+          <page-button size="small" @click="downloadTranslation()">
+            Download Translation
+          </page-button>
+        </div>
+      </div>
+    </template>
+
     <div
       class="flex-grow flex-shrink-0"
-      style="height: calc(100vh - 2rem - 3rem - 1px)"
+      style="height: calc(100vh - 2rem - 3rem - 3rem - 1px)"
     >
       <div class="w-full h-full max-h-full">
         <div class="w-full h-full max-h-full overflow-y-scroll">
@@ -31,6 +44,7 @@
 <script>
 import CatParagraph from '@/components/CatParagraph'
 import PageView from '@/components/PageView'
+import PageButton from '@/components/PageButton'
 import { ref, reactive, computed } from 'vue'
 import { calculateCompletenessPercentage } from '@/helpers'
 import { findTranslation, storeTranslation } from '@/storage'
@@ -41,6 +55,7 @@ export default {
   components: {
     CatParagraph,
     PageView,
+    PageButton,
   },
   setup() {
     const buildParagraph = paragraph => {
@@ -85,12 +100,23 @@ export default {
       storeTranslation(translation.value)
     }
 
+    const downloadAs = (fileName, fileContent) => {
+      const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
+      saveAs(blob, fileName)
+    }
+
+    const downloadOriginal = () => {
+      downloadAs(
+        `${translation.value.title}-original.txt`,
+        translation.value.paragraphs.map(item => item.source).join('\n\n'),
+      )
+    }
+
     const downloadTranslation = () => {
-      const content = translation.value.paragraphs
-        .map(item => item.translation)
-        .join('\n\n')
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, `${translation.value.title}.txt`)
+      downloadAs(
+        `${translation.value.title}-translated.txt`,
+        translation.value.paragraphs.map(item => item.translation).join('\n\n'),
+      )
     }
 
     const selectParagraph = (key, side) => {
@@ -138,6 +164,7 @@ export default {
     }
 
     return {
+      translation,
       pageTitle,
       textBeingEdited,
       selectedParagraph,
@@ -145,6 +172,7 @@ export default {
       selectParagraph,
       paragraphs,
       saveEditing,
+      downloadOriginal,
       downloadTranslation,
       repeatOriginalEditing,
     }

@@ -37,6 +37,10 @@
       </div>
     </header>
 
+    <div v-if="$slots.buttons" class="flex items-center h-12 px-4">
+      <slot name="buttons"></slot>
+    </div>
+
     <div class="p-4">
       <slot />
     </div>
