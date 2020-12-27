@@ -3,17 +3,30 @@
     <template #buttons>
       <div class="w-full flex items-center">
         <div class="flex-shrink w-1/2 text-xl font-bold">
-          {{ translation?.title || '' }}
+          {{ translation?.title || 'Loading...' }}
         </div>
 
-        <div class="flex justify-end w-1/2">
+        <div
+          v-if="translation"
+          class="flex items-center justify-end w-1/2 whitespace-no-wrap"
+        >
           <page-button size="small" @click="downloadOriginal()">
             Download Original
           </page-button>
 
-          <page-button size="small" @click="downloadTranslation()">
+          <page-button class="ml-4" size="small" @click="downloadTranslation()">
             Download Translation
           </page-button>
+
+          <div class="inline-block ml-4 text-sm">
+            {{ translation?.wordCount || 0 }} words
+          </div>
+
+          <translation-progress
+            class="ml-4"
+            :key="translation?.completeness || 0"
+            :completeness="translation?.completeness || 0"
+          />
         </div>
       </div>
     </template>
@@ -45,17 +58,19 @@
 import CatParagraph from '@/components/CatParagraph'
 import PageView from '@/components/PageView'
 import PageButton from '@/components/PageButton'
+import TranslationProgress from '@/components/TranslationProgress'
 import { ref, reactive, computed } from 'vue'
 import { calculateCompletenessPercentage } from '@/helpers'
 import { findTranslation, storeTranslation } from '@/storage'
-import { saveAs } from 'file-saver'
 import { useStore } from 'vuex'
+import { downloadAs, countWords } from '@/helpers/editor'
 
 export default {
   components: {
     CatParagraph,
     PageView,
     PageButton,
+    TranslationProgress,
   },
   setup() {
     const buildParagraph = paragraph => {
@@ -82,6 +97,11 @@ export default {
         pageTitle.value = `Editing Translation (${record.completeness.toFixed(
           0,
         )}%)`
+        if (record.wordCount === null || record.wordCount === undefined) {
+          record.wordCount = countWords(
+            record.paragraphs.map(paragraph => paragraph.source).join(' '),
+          )
+        }
       })
       .catch(err => {
         isLoading.value = false
@@ -98,11 +118,6 @@ export default {
         0,
       )}%)`
       storeTranslation(translation.value)
-    }
-
-    const downloadAs = (fileName, fileContent) => {
-      const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
-      saveAs(blob, fileName)
     }
 
     const downloadOriginal = () => {

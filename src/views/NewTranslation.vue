@@ -63,6 +63,7 @@ import { editTranslation } from '@/helpers'
 import { storeTranslation } from '@/storage'
 import { v4 as uuid } from 'uuid'
 import { translate as machineTranslation } from '@/machine-translation'
+import { countWords } from '@/helpers/editor'
 
 export default {
   components: {
@@ -105,6 +106,7 @@ export default {
           targetLanguage: state.targetLanguage,
           completeness: 0,
           paragraphs: [],
+          wordCount: countWords(sourceParagraphs.join(' ')),
         }
 
         for (const key in sourceParagraphs) {

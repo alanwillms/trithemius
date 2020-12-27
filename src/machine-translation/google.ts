@@ -49,7 +49,10 @@ const translate: TranslateFunc = async (
     ]
   }
 
-  return automaticTranslationParagraphs.join('\n\n')
+  return automaticTranslationParagraphs
+    .join('\n\n')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
 }
 
 export { translate }

@@ -11,6 +11,7 @@ interface TranslationProject {
   targetLanguage: LanguageCode
   completeness: number
   paragraphs?: TranslationProjectParagraph[]
+  wordCount?: number
 }
 
 interface TranslationProjectParagraph {

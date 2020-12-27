@@ -87,6 +87,7 @@ const storeTranslation: StoreTranslationFunc = async project => {
     sourceLanguage: project.sourceLanguage,
     targetLanguage: project.targetLanguage,
     completeness: project.completeness,
+    wordCount: project.wordCount,
   }
   if (record.exists) {
     await docRef.update(data)
