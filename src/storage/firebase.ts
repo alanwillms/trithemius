@@ -31,6 +31,9 @@ const findTranslation: FindTranslationFunc = async id => {
           | TranslationProjectParagraph[]
           | undefined) || []
       translationProject.paragraphs = data
+      translationProject.paragraphs.forEach(paragraph => {
+        paragraph.synchronized = true
+      })
     }
   }
 
@@ -59,15 +62,19 @@ const storeTranslationParagraphs = async (project: TranslationProject) => {
     const batch = db.batch()
 
     for (const paragraph of paragraphs) {
-      const data = {
-        key: parseInt(`${paragraph.key}`, 10),
-        source: paragraph.source,
-        translation: paragraph.translation,
-        automaticTranslation: paragraph.automaticTranslation,
-        touched: paragraph.touched,
-        owner: firebase.auth().currentUser?.uid,
+      if (!paragraph.synchronized) {
+        const data = {
+          key: parseInt(`${paragraph.key}`, 10),
+          source: paragraph.source,
+          translation: paragraph.translation,
+          automaticTranslation: paragraph.automaticTranslation,
+          touched: paragraph.touched,
+          owner: firebase.auth().currentUser?.uid,
+        }
+        console.log(`Synchronizing paragraph ${paragraph.key}`, data)
+        batch.set(collection.doc(`${paragraph.key}`), data)
+        paragraph.synchronized = true
       }
-      batch.set(collection.doc(`${paragraph.key}`), data)
     }
 
     await batch.commit()

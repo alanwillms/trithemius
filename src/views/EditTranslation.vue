@@ -172,6 +172,7 @@ export default {
     const saveEditing = () => {
       const key = selectedParagraph.value
       paragraphs.value[key].touched = true
+      paragraphs.value[key].synchronized = false
       paragraphs.value[key].translation = textBeingEdited.value
       store.dispatch('setTextBeingEdited', '')
       cancelEditing()

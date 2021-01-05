@@ -35,19 +35,19 @@ const listTranslations: ListTranslationsFunc = conditions => {
 }
 
 const findTranslation: FindTranslationFunc = id => {
-  console.log('finding', `${paragraphsKeyPrefix}${id}`)
   return Promise.resolve().then(function() {
     const translation = getTranslations().find(
       (found: TranslationProject) => found.id === id,
     )
-    console.log({ lista: getTranslations() })
     if (translation) {
-      console.log(translation)
       translation.paragraphs = JSON.parse(
         window.localStorage.getItem(
           `${paragraphsKeyPrefix}${translation.id}`,
         ) || '[]',
       )
+      translation.paragraphs.forEach((paragraph: any) => {
+        paragraph.synchronized = true
+      })
       return translation
     }
   })

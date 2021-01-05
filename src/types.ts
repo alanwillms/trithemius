@@ -20,6 +20,7 @@ interface TranslationProjectParagraph {
   automaticTranslation?: string
   translation: string
   touched: boolean
+  synchronized: boolean
 }
 
 export { LanguageCode, TranslationProject, TranslationProjectParagraph }
