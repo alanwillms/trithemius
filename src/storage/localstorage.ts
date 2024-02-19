@@ -6,9 +6,9 @@ import {
 } from './types'
 
 const projectsKey =
-  process.env.VUE_APP_LOCALSTORAGE_PROJECTS_KEY || 'translations'
+  import.meta.env.VITE_LOCALSTORAGE_PROJECTS_KEY || 'translations'
 const paragraphsKeyPrefix =
-  process.env.VUE_APP_LOCALSTORAGE_PARAGRAPHS_KEY_PREFIX || 'translation-'
+  import.meta.env.VITE_LOCALSTORAGE_PARAGRAPHS_KEY_PREFIX || 'translation-'
 
 function getTranslations() {
   return JSON.parse(window.localStorage.getItem(projectsKey) || '[]')

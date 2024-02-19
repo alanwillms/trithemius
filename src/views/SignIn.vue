@@ -1,13 +1,16 @@
 <template>
   <page-view title="Login">
     <div class="mb-8">
-      <label class="block mb-2 text-sm leading-none uppercase text-blue-700 w-full">E-mail</label>
+      <label
+        class="block w-full mb-2 text-sm leading-none text-blue-700 uppercase"
+        >E-mail</label
+      >
       <input
-        class="block w-full leading-none shadow-xl rounded bg-blue-900 h-12 p-4"
+        class="block w-full h-12 p-4 leading-none bg-blue-900 rounded shadow-xl"
         type="email"
         :disabled="state.isLoading"
         v-model="state.email"
-      >
+      />
     </div>
 
     <div v-if="state.error" class="mb-8 text-red-700">
@@ -15,44 +18,44 @@
     </div>
 
     <div class="mb-8">
-      <label class="block mb-2 text-sm leading-none uppercase text-blue-700 w-full">Password</label>
+      <label
+        class="block w-full mb-2 text-sm leading-none text-blue-700 uppercase"
+        >Password</label
+      >
       <input
-        class="block w-full leading-none shadow-xl rounded bg-blue-900 h-12 p-4"
+        class="block w-full h-12 p-4 leading-none bg-blue-900 rounded shadow-xl"
         type="password"
         :disabled="state.isLoading"
         v-model="state.password"
-      >
+      />
     </div>
 
     <p>
-      <page-button
-        type="primary"
-        @click="signIn()"
-        :disabled="state.isLoading">
+      <page-button type="primary" @click="signIn()" :disabled="state.isLoading">
         Sign in
       </page-button>
     </p>
   </page-view>
 </template>
 
-<script type="typescript">
-import PageButton from '@/components/PageButton'
+<script lang="ts">
+import PageButton from '@/components/PageButton.vue'
 import PageView from '@/components/PageView'
 import { reactive } from 'vue'
-import * as firebase from 'firebase'
+import firebase from 'firebase'
 import { userStore } from '../store/user.store'
 
 export default {
   components: {
     PageButton,
-    PageView
+    PageView,
   },
-  setup () {
+  setup() {
     const state = reactive({
       isLoading: false,
       email: '',
       password: '',
-      error: ''
+      error: '',
     })
 
     const signIn = () => {
@@ -61,7 +64,6 @@ export default {
         .auth()
         .signInWithEmailAndPassword(state.email, state.password)
         .then(data => {
-          // this.$router.replace({ name: "Dashboard" });
           userStore.setUserData(data)
           state.isLoading = false
           window.location.href = '/'
@@ -75,8 +77,8 @@ export default {
 
     return {
       state,
-      signIn
+      signIn,
     }
-  }
+  },
 }
 </script>

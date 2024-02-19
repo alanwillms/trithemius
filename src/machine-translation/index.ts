@@ -4,7 +4,7 @@ import * as google from './google'
 import * as none from './none'
 
 const drivers: TranslationDriverMap = { google, none }
-const chosenDriver = process.env.VUE_APP_TRANSLATION_DRIVER || 'none'
+const chosenDriver = import.meta.env.VITE_TRANSLATION_DRIVER || 'none'
 const driver = drivers[chosenDriver]
 
 if (!driver) {

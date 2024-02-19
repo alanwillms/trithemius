@@ -15,7 +15,7 @@ Supported storage drivers:
 ## Project setup
 
 ```bash
-yarn
+pnpm
 cp .env.example .env
 ```
 
@@ -31,19 +31,19 @@ firebase deploy --only firestore:rules
 ### Compiles and hot-reloads for development
 
 ```bash
-yarn serve
+pnpm dev
 ```
 
 ### Compiles and minifies for production
 
 ```bash
-yarn build
+pnpm build
 ```
 
 ### Lints and fixes files
 
 ```bash
-yarn lint
+pnpm lint
 ```
 
 ### Customize configuration

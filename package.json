@@ -1,69 +1,23 @@
 {
   "name": "trithemius",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.2.0",
+  "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
-    "core-js": "^3.6.5",
-    "file-saver": "^2.0.2",
-    "firebase": "^7.21.0",
-    "lodash.chunk": "^4.2.0",
-    "uuid": "^7.0.3",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-beta.11",
-    "vuex": "^4.0.0-beta.4"
+    "vue": "^3.4.15"
   },
   "devDependencies": {
-    "@types/file-saver": "^2.0.1",
-    "@types/lodash.chunk": "^4.2.6",
-    "@types/uuid": "^8.3.0",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
-    "@vue/cli-plugin-babel": "~4.2.0",
-    "@vue/cli-plugin-eslint": "~4.2.0",
-    "@vue/cli-plugin-router": "~4.2.0",
-    "@vue/cli-plugin-typescript": "^4.5.6",
-    "@vue/cli-service": "~4.2.0",
-    "@vue/compiler-sfc": "^3.0.0",
-    "@vue/eslint-config-standard": "^5.1.0",
-    "@vue/eslint-config-typescript": "^5.0.1",
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.7.2",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "eslint-plugin-vue": "^6.1.2",
-    "node-sass": "^4.14.1",
-    "sass-loader": "^8.0.2",
-    "typescript": "~3.9.3",
-    "vue-cli-plugin-tailwind": "^1.5.0",
-    "vue-cli-plugin-vue-next": "0.0.4",
-    "vue-template-compiler": "^2.6.12"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/standard",
-      "@vue/typescript",
-      "prettier"
-    ],
-    "parserOptions": {
-      "parser": "@typescript-eslint/parser"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+    "@vitejs/plugin-vue": "^5.0.3",
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.0",
+    "vue-tsc": "^1.8.27"
+  }
 }

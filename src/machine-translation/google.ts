@@ -1,7 +1,7 @@
 import chunk from 'lodash.chunk'
 import { TranslateFunc } from './types'
 
-const API_KEY = process.env.VUE_APP_GOOGLE_TRANSLATE_API_KEY
+const API_KEY = import.meta.env.VITE_GOOGLE_TRANSLATE_API_KEY
 const MAX_PARAGRAPHS_PER_REQUEST = 128
 const url = `https://translation.googleapis.com/language/translate/v2?key=${API_KEY}`
 
