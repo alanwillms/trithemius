@@ -1,9 +1,9 @@
 import { TranslateFunc } from './types'
 
 const translate: TranslateFunc = async (
-  targetLanguage,
+  _targetLanguage,
   sourceText,
-  sourceLanguage,
+  _sourceLanguage,
 ) => {
   return Promise.resolve().then(() => {
     return sourceText

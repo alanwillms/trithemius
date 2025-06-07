@@ -1,4 +1,18 @@
 import firebase from '@/firebase'
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  setDoc,
+  query,
+  where,
+  orderBy,
+  writeBatch,
+  DocumentData,
+} from 'firebase/firestore'
 import chunk from 'lodash.chunk'
 import { TranslationProject, TranslationProjectParagraph } from '@/types'
 import { userStore } from '@/store/user.store'
@@ -8,30 +22,28 @@ import {
   StoreTranslationFunc,
 } from './types'
 
-const db = firebase.firestore()
+const db = getFirestore(firebase)
 
 const getDocumentReference = (id: string) => {
-  return db.collection('projects').doc(id)
+  return doc(db, 'projects', id)
 }
 
-const findTranslation: FindTranslationFunc = async id => {
+const findTranslation: FindTranslationFunc = async (id) => {
   const docRef = getDocumentReference(id)
-  const record = await docRef.get()
+  const record = await getDoc(docRef)
   const translationProject = record.data() as TranslationProject | undefined
 
   if (translationProject) {
-    const humanTranslation = await docRef
-      .collection('paragraphs')
-      .orderBy('key')
-      .get()
+    const paragraphsCollection = collection(docRef, 'paragraphs')
+    const humanTranslation = await getDocs(query(paragraphsCollection))
 
     if (humanTranslation.size > 0) {
       const data =
-        (humanTranslation.docs.map(item => item.data()) as
+        (humanTranslation.docs.map((item: DocumentData) => item.data()) as
           | TranslationProjectParagraph[]
           | undefined) || []
       translationProject.paragraphs = data
-      translationProject.paragraphs.forEach(paragraph => {
+      translationProject.paragraphs.forEach((paragraph) => {
         paragraph.synchronized = true
       })
     }
@@ -40,26 +52,33 @@ const findTranslation: FindTranslationFunc = async id => {
   return translationProject
 }
 
-const listTranslations: ListTranslationsFunc = async conditions => {
+const listTranslations: ListTranslationsFunc = async (conditions) => {
   const { order } = conditions || {}
   const { data } = userStore.getState()
-  let query = db
-    .collection('projects')
-    .where('owner', '==', data?.uid)
-    .where('deletedAt', '==', null)
+  const projectsCollection = collection(db, 'projects')
+  let q = query(
+    projectsCollection,
+    where('owner', '==', data?.uid),
+    where('deletedAt', '==', null),
+  )
   if (order) {
-    query = query.orderBy(order.by, order.direction)
+    q = query(q, orderBy(order.by, order.direction))
   }
-  const records = await query.get()
-  return records.docs.map(doc => doc.data() as TranslationProject)
+  const records = await getDocs(q)
+  return records.docs.map(
+    (doc: DocumentData) => doc.data() as TranslationProject,
+  )
 }
 
 const storeTranslationParagraphs = async (project: TranslationProject) => {
-  const collection = getDocumentReference(project.id).collection('paragraphs')
+  const paragraphsCollection = collection(
+    doc(db, 'projects', project.id),
+    'paragraphs',
+  )
   const chunks = chunk(project.paragraphs || [], 500)
 
   for (const paragraphs of chunks) {
-    const batch = db.batch()
+    const batch = writeBatch(db)
 
     for (const paragraph of paragraphs) {
       if (!paragraph.synchronized) {
@@ -69,10 +88,11 @@ const storeTranslationParagraphs = async (project: TranslationProject) => {
           translation: paragraph.translation,
           automaticTranslation: paragraph.automaticTranslation,
           touched: paragraph.touched,
-          owner: firebase.auth().currentUser?.uid,
+          owner: userStore.getState().data?.uid,
         }
         console.log(`Synchronizing paragraph ${paragraph.key}`, data)
-        batch.set(collection.doc(`${paragraph.key}`), data)
+        const paragraphDoc = doc(paragraphsCollection, `${paragraph.key}`)
+        batch.set(paragraphDoc, data)
         paragraph.synchronized = true
       }
     }
@@ -81,11 +101,11 @@ const storeTranslationParagraphs = async (project: TranslationProject) => {
   }
 }
 
-const storeTranslation: StoreTranslationFunc = async project => {
+const storeTranslation: StoreTranslationFunc = async (project) => {
   const docRef = getDocumentReference(project.id)
-  const record = await docRef.get()
+  const record = await getDoc(docRef)
   const data = {
-    owner: firebase.auth().currentUser?.uid,
+    owner: userStore.getState().data?.uid,
     id: project.id,
     title: project.title,
     createdAt: project.createdAt,
@@ -96,15 +116,15 @@ const storeTranslation: StoreTranslationFunc = async project => {
     completeness: project.completeness,
     wordCount: project.wordCount,
   }
-  if (record.exists) {
-    await docRef.update(data)
+  if (record.exists()) {
+    await updateDoc(docRef, data)
     if (project.paragraphs && project.paragraphs.length > 0) {
       await storeTranslationParagraphs(project)
     }
     return project
   }
 
-  await docRef.set(data)
+  await setDoc(docRef, data)
   if (project.paragraphs && project.paragraphs.length > 0) {
     await storeTranslationParagraphs(project)
   }

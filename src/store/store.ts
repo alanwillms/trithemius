@@ -11,7 +11,7 @@ export abstract class Store {
 
   abstract _data(): any
 
-  _setup(data: any) {}
+  _setup(_data: any) {}
 
   getState() {
     return readonly(this._state)

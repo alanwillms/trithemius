@@ -23,4 +23,4 @@ interface TranslationProjectParagraph {
   synchronized: boolean
 }
 
-export { LanguageCode, TranslationProject, TranslationProjectParagraph }
+export type { LanguageCode, TranslationProject, TranslationProjectParagraph }

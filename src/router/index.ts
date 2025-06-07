@@ -37,7 +37,7 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   if (import.meta.env.VITE_STORAGE_DRIVER === 'firebase') {
     const { loggedIn } = userStore.getState()
     if (to.name !== 'SignIn' && !loggedIn) {

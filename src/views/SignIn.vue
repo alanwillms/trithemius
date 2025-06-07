@@ -40,9 +40,10 @@
 
 <script lang="ts">
 import PageButton from '@/components/PageButton.vue'
-import PageView from '@/components/PageView'
+import PageView from '@/components/PageView.vue'
 import { reactive } from 'vue'
-import firebase from 'firebase'
+import firebase from '@/firebase'
+import { getAuth, signInWithEmailAndPassword, UserCredential } from 'firebase/auth'
 import { userStore } from '../store/user.store'
 
 export default {
@@ -60,15 +61,14 @@ export default {
 
     const signIn = () => {
       state.isLoading = true
-      firebase
-        .auth()
-        .signInWithEmailAndPassword(state.email, state.password)
-        .then(data => {
-          userStore.setUserData(data)
+      const auth = getAuth(firebase)
+      signInWithEmailAndPassword(auth, state.email, state.password)
+        .then((data: UserCredential) => {
+          userStore.setUserData(data.user)
           state.isLoading = false
           window.location.href = '/'
         })
-        .catch(err => {
+        .catch((err: any) => {
           state.isLoading = false
           state.error = err.message
           console.log(err)
